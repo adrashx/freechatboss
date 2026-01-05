@@ -515,17 +515,17 @@
         @media (max-width: 600px) {
             /* Shrink avatar to save space */
             .floating-avatar {
-                width: 50px;
-                height: 50px;
+                width: 45px; /* Squeezed */
+                height: 45px;
                 bottom: 10px;
                 left: 10px;
                 border-width: 2px;
             }
             
-            /* Adjust footer padding to close the gap */
+            /* Adjust footer padding to close the gap and show mic */
             footer {
-                padding-left: 70px; /* 10px left + 50px width + 10px gap */
-                padding-right: 8px; /* Small right padding */
+                padding-left: 60px; /* 10px left + 45px width + 5px gap */
+                padding-right: 15px; /* Increased right padding to squeeze mic in */
                 padding-bottom: 10px; /* Standard bottom padding */
                 /* Handling safe area if needed */
                 padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
@@ -534,40 +534,41 @@
             
             /* Reduce gap between input and mic */
             .input-group {
-                gap: 5px; /* Squeezed in */
+                gap: 4px; /* Squeezed in */
             }
             
             /* Smaller Mic Button */
             #micBtn {
-                width: 40px; /* Squeezed in */
-                height: 40px;
+                width: 38px; /* Squeezed in */
+                height: 38px;
             }
             
             #micBtn svg {
-                width: 20px;
-                height: 20px;
+                width: 18px;
+                height: 18px;
             }
             
             /* Ensure text input height matches */
             .text-input-container {
-                min-height: 40px;
+                min-height: 38px;
                 padding: 3px;
             }
             
             textarea {
-                height: 40px;
+                height: 38px;
                 padding: 8px 10px;
                 font-size: 16px; /* Prevents iOS zoom on focus */
             }
             
             #sendBtn {
-                height: 40px;
+                height: 38px;
                 padding: 0 8px;
+                font-size: 0.8rem;
             }
 
             /* Adjust Chat Container Padding */
             #chat-container {
-                padding: 1rem;
+                padding: 10px 5px; /* Shift chats left */
                 padding-bottom: 120px;
             }
             
