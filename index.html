@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TutorBot Interface</title>
+    <style>
+        :root {
+            /* iOS EDUCATIONAL THEME (Default/Light) */
+            --bg-color: #F0F4F8;       /* Pale Cool Grey-Blue */
+            --header-bg: rgba(240, 244, 248, 0.9);
+            --text-color: #2C3E50;     /* Dark Slate Grey */
+            --sub-text: #607D8B;
+            
+            /* Bubbles */
+            --bot-bubble-bg: #FFFFFF;
+            --bot-text: #2C3E50;
+            --user-bubble-bg: #D6E4FF; /* Pastel Periwinkle */
+            --user-text: #2C3E50;
+            
+            /* UI Elements */
+            --input-area-bg: #FFFFFF;
+            --input-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            --bubble-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            
+            /* Mic Gradient */
+            --mic-grad-start: #2E5C8A;
+            --mic-grad-end: #1A3A5A;
+            
+            /* Drawer */
+            --drawer-bg: #FFFFFF;
+            --border-color: #E1E8ED;
+        }
+
+        /* DARK MODE (Adapted for iOS style) */
+        [data-theme="dark"] {
+            --bg-color: #1a2634;
+            --header-bg: rgba(26, 38, 52, 0.9);
+            --text-color: #ECF0F1;
+            --sub-text: #BDC3C7;
+            
+            --bot-bubble-bg: #2C3E50;
+            --bot-text: #ECF0F1;
+            --user-bubble-bg: #34495E;
+            --user-text: #ECF0F1;
+            
+            --input-area-bg: #2C3E50;
+            --input-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            --bubble-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            
+            --drawer-bg: #2C3E50;
+            --border-color: #34495E;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        /* --- HEADER --- */
+        header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            z-index: 50;
+            background: var(--header-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-title {
+            font-weight: 800; /* Bold as requested */
+            font-size: 1.3rem;
+            letter-spacing: -0.5px;
+            color: var(--text-color);
+            margin-left: 0; 
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--sub-text);
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border-radius: 50%;
+        }
+
+        .icon-btn:hover {
+            background: rgba(0,0,0,0.05);
+            color: var(--text-color);
+        }
+
+        .icon-btn.active-sound {
+            color: var(--mic-grad-start);
+            background: rgba(46, 92, 138, 0.1);
+        }
+
+        /* --- DRAWER (Settings) --- */
+        .voice-drawer {
+            position: absolute;
+            top: 70px;
+            left: 10px;
+            right: 10px;
+            background: var(--drawer-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            z-index: 40;
+            transform: translateY(-150%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+        }
+
+        .voice-drawer.open {
+            transform: translateY(0);
+        }
+
+        .drawer-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--sub-text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select {
+            width: 100%;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 12px;
+            font-family: inherit;
+            outline: none;
+            border-radius: 12px;
+            -webkit-appearance: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        /* --- ERROR POPUP --- */
+        .error-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .error-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .error-popup {
+            background: var(--drawer-bg);
+            width: 90%;
+            max-width: 320px;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid var(--border-color);
+        }
+
+        .error-overlay.visible .error-popup {
+            transform: scale(1);
+        }
+
+        .error-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .error-title {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #E74C3C;
+            margin-bottom: 8px;
+        }
+
+        .error-message {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .error-btn {
+            background: #E74C3C;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.95rem;
+            transition: background 0.2s;
+        }
+
+        .error-btn:hover {
+            background: #C0392B;
+        }
+
+        /* --- CHAT AREA --- */
+        #chat-container {
+            flex-grow: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* Airy spacing */
+            scroll-behavior: smooth;
+            padding-bottom: 140px; 
+            position: relative;
+            z-index: 10;
+            width: 100%;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 18px;
+            line-height: 1.5;
+            position: relative;
+            font-size: 1rem;
+            box-shadow: var(--bubble-shadow);
+            word-wrap: break-word;
+        }
+
+        /* Bot Message (Left) */
+        .message.bot {
+            align-self: flex-start;
+            background-color: var(--bot-bubble-bg);
+            color: var(--bot-text);
+            border-radius: 20px 20px 20px 4px; /* Pill shape with tail spot */
+            margin-left: 10px; 
+            margin-top: 10px; 
+        }
+
+        /* Bot Tail */
+        .message.bot::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: -8px;
+            width: 20px;
+            height: 20px;
+            background-color: var(--bot-bubble-bg);
+            border-bottom-right-radius: 16px;
+            z-index: -1;
+            box-shadow: var(--bubble-shadow);
+        }
+        .message.bot::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: -10px;
+            width: 10px;
+            height: 20px;
+            background-color: var(--bg-color); /* Masking */
+            border-bottom-right-radius: 10px;
+            z-index: 0;
+        }
+
+        /* User Message (Right) */
+        .message.user {
+            align-self: flex-end;
+            background-color: var(--user-bubble-bg);
+            color: var(--user-text);
+            border-radius: 20px 20px 4px 20px;
+            margin-right: 10px;
+        }
+
+        /* User Tail */
+        .message.user::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            background-color: var(--user-bubble-bg);
+            border-bottom-left-radius: 16px;
+            z-index: -1;
+            box-shadow: var(--bubble-shadow);
+        }
+        .message.user::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: -10px;
+            width: 10px;
+            height: 20px;
+            background-color: var(--bg-color); /* Masking */
+            border-bottom-left-radius: 10px;
+            z-index: 0;
+        }
+
+        /* Feedback Icon */
+        .feedback-icon {
+            display: inline-block;
+            margin-right: 6px;
+            color: #2ECC71; /* Green */
+            font-size: 1.1em;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 18px;
+            background-color: var(--bot-bubble-bg);
+            border-radius: 20px 20px 20px 4px;
+            align-self: flex-start;
+            margin-left: 10px;
+            box-shadow: var(--bubble-shadow);
+            width: fit-content;
+            position: relative;
+        }
+        
+        .typing-indicator::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: -8px;
+            width: 20px;
+            height: 20px;
+            background-color: var(--bot-bubble-bg);
+            border-bottom-right-radius: 16px;
+            z-index: -1;
+            box-shadow: var(--bubble-shadow);
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--sub-text);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .sender-name {
+            display: none; 
+        }
+
+        /* --- FOOTER (Floating) --- */
+        footer {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            /* Default Padding for Desktop */
+            padding-left: 115px; 
+            background: transparent;
+            flex-shrink: 0;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            pointer-events: none;
+            width: 100%;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+            align-items: flex-end;
+            pointer-events: auto;
+        }
+
+        /* Text Input Container */
+        .text-input-container {
+            flex-grow: 1;
+            background: var(--input-area-bg);
+            border-radius: 25px;
+            box-shadow: var(--input-shadow);
+            padding: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        textarea {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            padding: 12px 15px;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            resize: none;
+            height: 50px; 
+            line-height: 1.5;
+        }
+
+        /* Send Button */
+        #sendBtn {
+            background: transparent;
+            color: var(--mic-grad-start);
+            border: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            padding: 0 15px;
+            cursor: pointer;
+            height: 50px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Large Mic Button */
+        #micBtn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--mic-grad-start), var(--mic-grad-end));
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(46, 92, 138, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            flex-shrink: 0;
+        }
+
+        #micBtn:active {
+            transform: scale(0.95);
+        }
+
+        #micBtn.active {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* --- FLOATING AVATAR --- */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .floating-avatar {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 8px 20px rgba(44, 62, 80, 0.15);
+            z-index: 25; 
+            animation: float 4s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid #fff;
+            overflow: hidden; 
+        }
+
+        .floating-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* --- MOBILE OPTIMIZATIONS --- */
+        @media (max-width: 600px) {
+            /* Shrink avatar to save space */
+            .floating-avatar {
+                width: 50px;
+                height: 50px;
+                bottom: 10px;
+                left: 10px;
+                border-width: 2px;
+            }
+            
+            /* Adjust footer padding to close the gap */
+            footer {
+                padding-left: 70px; /* 10px left + 50px width + 10px gap */
+                padding-right: 10px; /* Small right padding */
+                padding-bottom: 10px; /* Standard bottom padding */
+                /* Handling safe area if needed */
+                padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
+                width: 100%;
+            }
+            
+            /* Reduce gap between input and mic */
+            .input-group {
+                gap: 8px;
+            }
+            
+            /* Smaller Mic Button */
+            #micBtn {
+                width: 45px;
+                height: 45px;
+            }
+            
+            #micBtn svg {
+                width: 22px;
+                height: 22px;
+            }
+            
+            /* Ensure text input height matches */
+            .text-input-container {
+                min-height: 45px;
+            }
+            
+            textarea {
+                height: 45px;
+                padding: 10px 12px;
+                font-size: 16px; /* Prevents iOS zoom on focus */
+            }
+            
+            #sendBtn {
+                height: 45px;
+                padding: 0 10px;
+            }
+
+            /* Adjust Chat Container Padding */
+            #chat-container {
+                padding: 1rem;
+                padding-bottom: 120px;
+            }
+            
+            .message {
+                max-width: 88%;
+            }
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(46, 92, 138, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(46, 92, 138, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 92, 138, 0); }
+        }
+
+        /* SVG Sizing */
+        svg { width: 24px; height: 24px; fill: currentColor; }
+        
+        #micBtn svg { width: 28px; height: 28px; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">TutorBot</div>
+        
+        <div class="header-controls">
+            <!-- Theme Toggle -->
+            <button class="icon-btn" id="themeToggle" title="Theme">
+                <svg id="themeIcon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+            </button>
+
+            <!-- Sound Toggle -->
+            <button class="icon-btn" id="speakerToggle" title="Sound">
+                <svg id="speakerIcon" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+            </button>
+            
+            <!-- Settings Toggle -->
+            <button class="icon-btn" id="settingsToggle" title="Settings">
+                <svg viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- SETTINGS DRAWER -->
+    <div class="voice-drawer" id="voiceDrawer">
+        <div class="drawer-label">Voice Selection</div>
+        <select id="voiceSelect">
+            <option value="">Loading voices...</option>
+        </select>
+        <div style="margin-top:10px; font-size: 0.7rem; color: var(--sub-text);">
+            Preferences saved automatically.
+        </div>
+    </div>
+
+    <!-- ERROR POPUP -->
+    <div id="errorOverlay" class="error-overlay">
+        <div class="error-popup">
+            <span class="error-icon">⚠️</span>
+            <div class="error-title">API Error</div>
+            <div id="errorMessage" class="error-message">Something went wrong.</div>
+            <button class="error-btn" onclick="closeErrorPopup()">OK</button>
+        </div>
+    </div>
+
+    <!-- FLOATING AVATAR -->
+    <div class="floating-avatar">
+        <!-- Open Source Human Face (Placeholder for realistic Tutor) -->
+        <img src="https://randomuser.me/api/portraits/men/46.jpg" alt="Tutor Face">
+    </div>
+
+    <!-- CHAT CONTAINER -->
+    <div id="chat-container">
+        <!-- Initial message without checkmark -->
+        <div class="message bot">
+            Il est 8h28. La réunion commence dans deux minutes. Tu peux m'expliquer pourquoi tu n'es pas encore là ?
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="input-group">
+            <div class="text-input-container">
+                <textarea id="userInput" placeholder="Reply..." onkeydown="handleEnter(event)"></textarea>
+                <button id="sendBtn" onclick="sendMessage()">Send</button>
+            </div>
+            <button id="micBtn" title="Speak">
+                <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        // --- CONFIG & STATE ---
+        const STORAGE_KEY = 'tutor_bot_settings_v1';
+        
+        let chatHistory = [];
+        let audioEnabled = false; 
+        let voices = [];
+        let selectedVoice = null;
+        let settings = { 
+            voiceName: null, 
+            theme: 'light' // Default to light per request
+        };
+
+        // --- DOM ELEMENTS ---
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const micBtn = document.getElementById('micBtn');
+        const settingsToggle = document.getElementById('settingsToggle');
+        const voiceDrawer = document.getElementById('voiceDrawer');
+        const speakerToggle = document.getElementById('speakerToggle');
+        const speakerIcon = document.getElementById('speakerIcon');
+        const voiceSelect = document.getElementById('voiceSelect');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const errorOverlay = document.getElementById('errorOverlay');
+        const errorMessageDiv = document.getElementById('errorMessage');
+
+        // --- ICONS (SVG Strings) ---
+        const SVG_MOON = '<path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>';
+        const SVG_SUN = '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v3h3v-3zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v3h3v-3h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>';
+        const SVG_MUTE = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+        const SVG_SOUND = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+
+        // --- SYSTEM PROMPT ---
+        const systemInstruction = `
+        Rôle : Patron exigent, strict et en colère.
+        CONTEXTE : Il est 8h28, réunion à 8h30. Tu es furieux.
+        OBJECTIFS : 
+        1. Être froid, direct, mettre la pression.
+        2. N'accepter que des excuses crédibles.
+        3. Corriger GENTIMENT le français si fautes, puis reprendre le ton colère.
+        `;
+
+        // --- INITIALIZATION ---
+        function init() {
+            loadSettings();
+            applyTheme(settings.theme);
+            populateVoiceList();
+            if (window.speechSynthesis.onvoiceschanged !== undefined) {
+                window.speechSynthesis.onvoiceschanged = populateVoiceList;
+            }
+        }
+
+        // --- ERROR HANDLING ---
+        function showErrorPopup(msg) {
+            errorMessageDiv.textContent = msg;
+            errorOverlay.classList.add('visible');
+        }
+
+        function closeErrorPopup() {
+            errorOverlay.classList.remove('visible');
+        }
+
+        // --- THEME LOGIC ---
+        themeToggle.addEventListener('click', () => {
+            const newTheme = settings.theme === 'light' ? 'dark' : 'light';
+            settings.theme = newTheme;
+            applyTheme(newTheme);
+            saveSettings();
+        });
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            themeIcon.innerHTML = theme === 'light' ? SVG_SUN : SVG_MOON;
+        }
+
+        // --- DRAWER LOGIC ---
+        settingsToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            voiceDrawer.classList.toggle('open');
+            settingsToggle.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            const isClickInside = voiceDrawer.contains(e.target);
+            const isClickToggle = settingsToggle.contains(e.target);
+            if (!isClickInside && !isClickToggle && voiceDrawer.classList.contains('open')) {
+                voiceDrawer.classList.remove('open');
+                settingsToggle.classList.remove('active');
+            }
+        });
+
+        // --- AUTO FOCUS ---
+        document.addEventListener('keydown', (e) => {
+            const tag = document.activeElement.tagName;
+            if (tag !== 'TEXTAREA' && tag !== 'INPUT' && tag !== 'SELECT') {
+                if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key.length === 1) {
+                    userInput.focus();
+                }
+            }
+        });
+
+        // --- AUDIO TOGGLE ---
+        speakerToggle.addEventListener('click', () => {
+            audioEnabled = !audioEnabled;
+            if (audioEnabled) {
+                speakerIcon.innerHTML = SVG_SOUND;
+                speakerToggle.classList.add('active-sound');
+                if (!selectedVoice && voices.length > 0) {
+                    voiceDrawer.classList.add('open');
+                    settingsToggle.classList.add('active');
+                }
+            } else {
+                speakerIcon.innerHTML = SVG_MUTE;
+                speakerToggle.classList.remove('active-sound');
+                window.speechSynthesis.cancel();
+            }
+        });
+
+        // --- VOICE LOGIC ---
+        function populateVoiceList() {
+            voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) return;
+
+            voiceSelect.innerHTML = '';
+            
+            const fr = voices.filter(v => v.lang.includes('fr'));
+            const other = voices.filter(v => !v.lang.includes('fr'));
+            const all = [...fr, ...other];
+
+            all.forEach(voice => {
+                const opt = document.createElement('option');
+                opt.textContent = `${voice.name} (${voice.lang})`;
+                opt.value = voice.name;
+                voiceSelect.appendChild(opt);
+            });
+
+            if (settings.voiceName) {
+                const found = voices.find(v => v.name === settings.voiceName);
+                if (found) {
+                    selectedVoice = found;
+                    voiceSelect.value = found.name;
+                }
+            } else if (fr.length > 0) {
+                selectedVoice = fr[0];
+                voiceSelect.value = selectedVoice.name;
+            }
+        }
+
+        voiceSelect.addEventListener('change', () => {
+            const name = voiceSelect.value;
+            selectedVoice = voices.find(v => v.name === name);
+            if (selectedVoice) {
+                settings.voiceName = selectedVoice.name;
+                saveSettings();
+                if (audioEnabled) {
+                    window.speechSynthesis.cancel();
+                    speakText("Voix activée.");
+                }
+            }
+        });
+
+        // --- CHAT LOGIC ---
+        function handleEnter(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function scrollToBottom() {
+            chatContainer.scrollTo({
+                top: chatContainer.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        function appendMessage(role, text) {
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+            
+            let innerContent = text.replace(/\n/g, '<br>');
+            
+            // Add checkmark for positive feedback if Bot
+            if (role === 'bot') {
+                const positiveWords = ['bravo', 'excellent', 'bien', 'parfait', 'super', 'bon', 'd\'accord', 'ok'];
+                const firstWord = text.trim().split(' ')[0].toLowerCase().replace(/[.,!]/g, '');
+                if (positiveWords.includes(firstWord)) {
+                    innerContent = `<span class="feedback-icon">✅</span>` + innerContent;
+                }
+            }
+            
+            div.innerHTML = innerContent;
+            chatContainer.appendChild(div);
+            scrollToBottom();
+        }
+
+        // --- LOADING INDICATOR ---
+        function showLoadingIndicator() {
+            const div = document.createElement('div');
+            div.className = 'typing-indicator';
+            div.id = 'loadingIndicator';
+            div.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            chatContainer.appendChild(div);
+            scrollToBottom();
+            return div;
+        }
+
+        function removeLoadingIndicator() {
+            const el = document.getElementById('loadingIndicator');
+            if (el) el.remove();
+        }
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+            
+            userInput.value = '';
+            appendMessage('user', text);
+            sendBtn.disabled = true;
+
+            window.speechSynthesis.cancel();
+
+            // Prepare messages in OpenAI/Pollinations format
+            const messages = [
+                { role: 'system', content: systemInstruction }
+            ];
+            
+            chatHistory.forEach(msg => {
+                messages.push({
+                    role: msg.role === 'user' ? 'user' : 'assistant',
+                    content: msg.text
+                });
+            });
+            
+            messages.push({ role: 'user', content: text });
+
+            // Show Typing Indicator
+            showLoadingIndicator();
+
+            try {
+                const url = `https://text.pollinations.ai/`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: messages,
+                        model: 'openai', // Default model
+                        seed: Math.floor(Math.random() * 1000)
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Pollinations API Error: ${response.status} ${response.statusText}`);
+                }
+
+                const botText = await response.text();
+
+                // Remove Indicator
+                removeLoadingIndicator();
+
+                if (botText) {
+                    appendMessage('bot', botText);
+                    speakText(botText);
+                    
+                    chatHistory.push({ role: 'user', text: text });
+                    chatHistory.push({ role: 'bot', text: botText });
+                }
+            } catch (err) {
+                removeLoadingIndicator();
+                console.error(err);
+                showErrorPopup(err.message || "Connection Error. Please retry.");
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+
+        // --- TTS & STT ---
+        function speakText(text) {
+            if (!audioEnabled) return;
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'fr-FR'; 
+            if (selectedVoice) u.voice = selectedVoice;
+            window.speechSynthesis.speak(u);
+        }
+
+        // Mic Input
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'fr-FR';
+            recognition.continuous = false;
+            
+            recognition.onstart = () => micBtn.classList.add('active');
+            recognition.onend = () => micBtn.classList.remove('active');
+            recognition.onresult = (e) => {
+                userInput.value = e.results[0][0].transcript;
+                userInput.focus();
+            };
+            
+            micBtn.addEventListener('click', () => {
+                try { recognition.start(); } catch(e) { recognition.stop(); }
+            });
+        } else {
+            micBtn.style.display = 'none';
+        }
+
+        // --- STORAGE ---
+        function saveSettings() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+        }
+
+        function loadSettings() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) settings = { ...settings, ...JSON.parse(saved) };
+            } catch(e) { console.error(e); }
+        }
+
+        // Start
+        init();
+
+    </script>
+</body>
+</html>
