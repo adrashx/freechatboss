@@ -525,7 +525,7 @@
             /* Adjust footer padding to close the gap */
             footer {
                 padding-left: 70px; /* 10px left + 50px width + 10px gap */
-                padding-right: 10px; /* Small right padding */
+                padding-right: 8px; /* Small right padding */
                 padding-bottom: 10px; /* Standard bottom padding */
                 /* Handling safe area if needed */
                 padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
@@ -534,34 +534,35 @@
             
             /* Reduce gap between input and mic */
             .input-group {
-                gap: 8px;
+                gap: 5px; /* Squeezed in */
             }
             
             /* Smaller Mic Button */
             #micBtn {
-                width: 45px;
-                height: 45px;
+                width: 40px; /* Squeezed in */
+                height: 40px;
             }
             
             #micBtn svg {
-                width: 22px;
-                height: 22px;
+                width: 20px;
+                height: 20px;
             }
             
             /* Ensure text input height matches */
             .text-input-container {
-                min-height: 45px;
+                min-height: 40px;
+                padding: 3px;
             }
             
             textarea {
-                height: 45px;
-                padding: 10px 12px;
+                height: 40px;
+                padding: 8px 10px;
                 font-size: 16px; /* Prevents iOS zoom on focus */
             }
             
             #sendBtn {
-                height: 45px;
-                padding: 0 10px;
+                height: 40px;
+                padding: 0 8px;
             }
 
             /* Adjust Chat Container Padding */
