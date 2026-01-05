@@ -515,17 +515,17 @@
         @media (max-width: 600px) {
             /* Shrink avatar to save space */
             .floating-avatar {
-                width: 45px; /* Squeezed */
-                height: 45px;
+                width: 50px;
+                height: 50px;
                 bottom: 10px;
                 left: 10px;
                 border-width: 2px;
             }
             
-            /* Adjust footer padding to close the gap and show mic */
+            /* Adjust footer padding to close the gap */
             footer {
-                padding-left: 60px; /* 10px left + 45px width + 5px gap */
-                padding-right: 15px; /* Increased right padding to squeeze mic in */
+                padding-left: 70px; /* 10px left + 50px width + 10px gap */
+                padding-right: 10px; /* Small right padding */
                 padding-bottom: 10px; /* Standard bottom padding */
                 /* Handling safe area if needed */
                 padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
@@ -534,41 +534,39 @@
             
             /* Reduce gap between input and mic */
             .input-group {
-                gap: 4px; /* Squeezed in */
+                gap: 8px;
             }
             
             /* Smaller Mic Button */
             #micBtn {
-                width: 38px; /* Squeezed in */
-                height: 38px;
+                width: 45px;
+                height: 45px;
             }
             
             #micBtn svg {
-                width: 18px;
-                height: 18px;
+                width: 22px;
+                height: 22px;
             }
             
             /* Ensure text input height matches */
             .text-input-container {
-                min-height: 38px;
-                padding: 3px;
+                min-height: 45px;
             }
             
             textarea {
-                height: 38px;
-                padding: 8px 10px;
+                height: 45px;
+                padding: 10px 12px;
                 font-size: 16px; /* Prevents iOS zoom on focus */
             }
             
             #sendBtn {
-                height: 38px;
-                padding: 0 8px;
-                font-size: 0.8rem;
+                height: 45px;
+                padding: 0 10px;
             }
 
             /* Adjust Chat Container Padding */
             #chat-container {
-                padding: 10px 5px; /* Shift chats left */
+                padding: 1rem;
                 padding-bottom: 120px;
             }
             
@@ -669,6 +667,8 @@
     <script>
         // --- CONFIG & STATE ---
         const STORAGE_KEY = 'tutor_bot_settings_v1';
+        // NEW WORKER URL
+        const WORKER_URL = 'https://my-secure-chat-api.adraxsh.workers.dev/';
         
         let chatHistory = [];
         let audioEnabled = false; 
@@ -894,14 +894,14 @@
 
             window.speechSynthesis.cancel();
 
-            // Prepare messages in OpenAI/Pollinations format
+            // Prepare messages in OpenAI format for the Cloudflare Worker
             const messages = [
                 { role: 'system', content: systemInstruction }
             ];
             
             chatHistory.forEach(msg => {
                 messages.push({
-                    role: msg.role === 'user' ? 'user' : 'assistant',
+                    role: msg.role === 'user' ? 'user' : 'assistant', // Map 'bot' to 'assistant'
                     content: msg.text
                 });
             });
@@ -912,22 +912,23 @@
             showLoadingIndicator();
 
             try {
-                const url = `https://text.pollinations.ai/`;
-                const response = await fetch(url, {
+                // Call the Cloudflare Worker
+                const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        messages: messages,
-                        model: 'openai', // Default model
-                        seed: Math.floor(Math.random() * 1000)
+                        messages: messages
                     })
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Pollinations API Error: ${response.status} ${response.statusText}`);
+                    throw new Error(`Worker API Error: ${response.status} ${response.statusText}`);
                 }
 
-                const botText = await response.text();
+                const data = await response.json();
+                
+                // Parse OpenAI format (data.choices[0].message.content)
+                const botText = data.choices?.[0]?.message?.content || "(*Error: No response content*)";
 
                 // Remove Indicator
                 removeLoadingIndicator();
