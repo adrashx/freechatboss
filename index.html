@@ -124,32 +124,9 @@
         }
 
         /* --- DRAWER (Settings) --- */
+        /* HIDDEN FOR GOOGLE TRANSLATE MODE (No voice selection available) */
         .voice-drawer {
-            position: absolute;
-            top: 70px;
-            left: 10px;
-            right: 10px;
-            background: var(--drawer-bg);
-            border-radius: 16px;
-            padding: 1.5rem;
-            z-index: 40;
-            transform: translateY(-150%);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border: 1px solid var(--border-color);
-        }
-
-        .voice-drawer.open {
-            transform: translateY(0);
-        }
-
-        .drawer-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: var(--sub-text);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            display: none; 
         }
 
         select {
@@ -611,22 +588,14 @@
             </button>
             
             <!-- Settings Toggle -->
-            <button class="icon-btn" id="settingsToggle" title="Settings">
+            <button class="icon-btn" id="settingsToggle" title="Settings" style="display:none;">
                 <svg viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
             </button>
         </div>
     </header>
 
     <!-- SETTINGS DRAWER -->
-    <div class="voice-drawer" id="voiceDrawer">
-        <div class="drawer-label">Voice Selection</div>
-        <select id="voiceSelect">
-            <option value="">Loading voices...</option>
-        </select>
-        <div style="margin-top:10px; font-size: 0.7rem; color: var(--sub-text);">
-            Preferences saved automatically.
-        </div>
-    </div>
+    <!-- Removed for this version as Voice Selection is not applicable -->
 
     <!-- ERROR POPUP -->
     <div id="errorOverlay" class="error-overlay">
@@ -673,11 +642,9 @@
         
         let chatHistory = [];
         let audioEnabled = false; 
-        let voices = [];
-        let selectedVoice = null;
+        // Google Translate Mode: No voice selection available
         let settings = { 
-            voiceName: null, 
-            theme: 'light' // Default to light per request
+            theme: 'light' 
         };
 
         // --- DOM ELEMENTS ---
@@ -685,11 +652,8 @@
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
         const micBtn = document.getElementById('micBtn');
-        const settingsToggle = document.getElementById('settingsToggle');
-        const voiceDrawer = document.getElementById('voiceDrawer');
         const speakerToggle = document.getElementById('speakerToggle');
         const speakerIcon = document.getElementById('speakerIcon');
-        const voiceSelect = document.getElementById('voiceSelect');
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         const errorOverlay = document.getElementById('errorOverlay');
@@ -715,10 +679,6 @@
         function init() {
             loadSettings();
             applyTheme(settings.theme);
-            populateVoiceList();
-            if (window.speechSynthesis.onvoiceschanged !== undefined) {
-                window.speechSynthesis.onvoiceschanged = populateVoiceList;
-            }
         }
 
         // --- ERROR HANDLING ---
@@ -744,22 +704,6 @@
             themeIcon.innerHTML = theme === 'light' ? SVG_SUN : SVG_MOON;
         }
 
-        // --- DRAWER LOGIC ---
-        settingsToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            voiceDrawer.classList.toggle('open');
-            settingsToggle.classList.toggle('active');
-        });
-
-        document.addEventListener('click', (e) => {
-            const isClickInside = voiceDrawer.contains(e.target);
-            const isClickToggle = settingsToggle.contains(e.target);
-            if (!isClickInside && !isClickToggle && voiceDrawer.classList.contains('open')) {
-                voiceDrawer.classList.remove('open');
-                settingsToggle.classList.remove('active');
-            }
-        });
-
         // --- AUTO FOCUS ---
         document.addEventListener('keydown', (e) => {
             const tag = document.activeElement.tagName;
@@ -776,57 +720,12 @@
             if (audioEnabled) {
                 speakerIcon.innerHTML = SVG_SOUND;
                 speakerToggle.classList.add('active-sound');
-                if (!selectedVoice && voices.length > 0) {
-                    voiceDrawer.classList.add('open');
-                    settingsToggle.classList.add('active');
-                }
             } else {
                 speakerIcon.innerHTML = SVG_MUTE;
                 speakerToggle.classList.remove('active-sound');
-                window.speechSynthesis.cancel();
-            }
-        });
-
-        // --- VOICE LOGIC ---
-        function populateVoiceList() {
-            voices = window.speechSynthesis.getVoices();
-            if (voices.length === 0) return;
-
-            voiceSelect.innerHTML = '';
-            
-            const fr = voices.filter(v => v.lang.includes('fr'));
-            const other = voices.filter(v => !v.lang.includes('fr'));
-            const all = [...fr, ...other];
-
-            all.forEach(voice => {
-                const opt = document.createElement('option');
-                opt.textContent = `${voice.name} (${voice.lang})`;
-                opt.value = voice.name;
-                voiceSelect.appendChild(opt);
-            });
-
-            if (settings.voiceName) {
-                const found = voices.find(v => v.name === settings.voiceName);
-                if (found) {
-                    selectedVoice = found;
-                    voiceSelect.value = found.name;
-                }
-            } else if (fr.length > 0) {
-                selectedVoice = fr[0];
-                voiceSelect.value = selectedVoice.name;
-            }
-        }
-
-        voiceSelect.addEventListener('change', () => {
-            const name = voiceSelect.value;
-            selectedVoice = voices.find(v => v.name === name);
-            if (selectedVoice) {
-                settings.voiceName = selectedVoice.name;
-                saveSettings();
-                if (audioEnabled) {
-                    window.speechSynthesis.cancel();
-                    speakText("Voix activée.");
-                }
+                // Stop any playing audio
+                // Note: Standard HTML Audio elements don't have a global cancel, 
+                // but this flag prevents new chunks from starting.
             }
         });
 
@@ -893,8 +792,6 @@
             appendMessage('user', text);
             sendBtn.disabled = true;
 
-            window.speechSynthesis.cancel();
-
             // Prepare messages in OpenAI format for the Cloudflare Worker
             const messages = [
                 { role: 'system', content: systemInstruction }
@@ -936,7 +833,7 @@
 
                 if (botText) {
                     appendMessage('bot', botText);
-                    speakText(botText);
+                    speakText(botText); // Uses new Google TTS logic
                     
                     chatHistory.push({ role: 'user', text: text });
                     chatHistory.push({ role: 'bot', text: botText });
@@ -950,13 +847,54 @@
             }
         }
 
-        // --- TTS & STT ---
+        // --- NEW GOOGLE TTS HACK ---
         function speakText(text) {
             if (!audioEnabled) return;
-            const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'fr-FR'; 
-            if (selectedVoice) u.voice = selectedVoice;
-            window.speechSynthesis.speak(u);
+
+            // OPTIMIZATION: Only split if text is too long for the API (~200 char limit)
+            // This prevents awkward pauses in short sentences.
+            let chunks = [];
+            if (text.length > 180) {
+                 chunks = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
+            } else {
+                 chunks = [text];
+            }
+
+            let index = 0;
+
+            function playNext() {
+                if (index >= chunks.length || !audioEnabled) return;
+
+                const cleanText = chunks[index].trim();
+                if (!cleanText) {
+                    index++;
+                    playNext();
+                    return;
+                }
+
+                const encodedText = encodeURIComponent(cleanText);
+                const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=fr&client=tw-ob`;
+                
+                const audio = new Audio(url);
+                audio.playbackRate = 1.0; // Increased speed to normal (was 0.9)
+
+                audio.onended = function() {
+                    index++;
+                    playNext();
+                };
+                
+                audio.onerror = function(e) {
+                    console.error("Audio playback error", e);
+                    // Try next chunk if one fails
+                    index++;
+                    playNext();
+                };
+
+                // Play needs user interaction context, which we have from the 'Send' click
+                audio.play().catch(e => console.error("Play error:", e));
+            }
+
+            playNext();
         }
 
         // Mic Input
