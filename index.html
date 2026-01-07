@@ -938,11 +938,11 @@
             showLoadingIndicator();
 
             try {
-                // 1. Get Text Response (OpenAI via Worker)
+                // 1. Get Chat Response from OpenAI (via Worker)
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: messages }) // Send messages implies Chat request
+                    body: JSON.stringify({ messages: messages })
                 });
 
                 if (!response.ok) throw new Error(`Worker API Error: ${response.status}`);
@@ -957,24 +957,25 @@
                     chatHistory.push({ role: 'user', text: text });
                     chatHistory.push({ role: 'bot', text: botText });
                     
-                    // 2. Get Audio Response (ElevenLabs via Worker)
+                    // 2. Play Audio via ElevenLabs (via Worker)
                     speakText(botText);
                 }
             } catch (err) {
                 removeLoadingIndicator();
                 console.error(err);
+                // Replaced annoying alert with the nice popup
                 window.showErrorPopup("Error: " + (err.message || "Connection Error"));
             } finally {
                 sendBtn.disabled = false;
             }
         }
 
-        // --- ELEVENLABS TTS (Secure via Worker) ---
+        // --- ELEVENLABS TTS (via Secure Worker) ---
         async function speakText(text) {
             if (!audioEnabled) return;
 
             try {
-                // We send a specific 'type: tts' to tell the worker to use ElevenLabs
+                // Request audio from our worker which calls ElevenLabs
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -986,17 +987,17 @@
 
                 if (!response.ok) throw new Error("Audio generation failed");
 
-                // The worker returns the raw audio file (blob)
+                // Get the blob and play it
                 const audioBlob = await response.blob();
                 const audioUrl = URL.createObjectURL(audioBlob);
                 
                 const audio = new Audio(audioUrl);
-                audio.onended = () => URL.revokeObjectURL(audioUrl); // Cleanup memory
+                audio.onended = () => URL.revokeObjectURL(audioUrl); // Cleanup
                 audio.play().catch(e => console.error("Autoplay blocked:", e));
 
             } catch (e) {
                 console.error("TTS Error:", e);
-                // Optional: Fallback to silent or show error
+                // Fail silently or show small toast, but don't block chat
             }
         }
 
