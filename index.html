@@ -972,9 +972,14 @@
 
         // --- ELEVENLABS TTS (via Secure Worker) ---
         async function speakText(text) {
-            if (!audioEnabled) return;
+            console.log("Attempting to speak:", text); // DEBUG
+            if (!audioEnabled) {
+                console.log("Audio is disabled. Click the speaker icon to enable."); // DEBUG
+                return;
+            }
 
             try {
+                console.log("Fetching TTS from worker...");
                 // Request audio from our worker which calls ElevenLabs
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',
@@ -989,6 +994,7 @@
 
                 // Get the blob and play it
                 const audioBlob = await response.blob();
+                console.log("Audio blob received, playing...");
                 const audioUrl = URL.createObjectURL(audioBlob);
                 
                 const audio = new Audio(audioUrl);
