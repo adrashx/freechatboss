@@ -72,6 +72,72 @@
             max-width: 100%;
         }
 
+        /* --- LOGIN SCREEN --- */
+        #login-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-color);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--drawer-bg);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid var(--border-color);
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .login-subtitle {
+            color: var(--sub-text);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #FFFFFF;
+            color: #1F2937;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 1px solid #E5E7EB;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .google-btn:hover {
+            background: #F9FAFB;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            transform: translateY(-1px);
+        }
+
+        .google-btn svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
         /* --- HEADER --- */
         header {
             padding: 1rem 1.5rem;
@@ -123,6 +189,14 @@
             background: rgba(46, 92, 138, 0.1);
         }
 
+        /* --- APP CONTENT WRAPPER --- */
+        #app-content {
+            display: none; /* Hidden by default until login */
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+
         /* --- DRAWER (Settings) --- */
         /* HIDDEN FOR GOOGLE TRANSLATE MODE (No voice selection available) */
         .voice-drawer {
@@ -141,81 +215,6 @@
             -webkit-appearance: none;
             cursor: pointer;
             font-size: 0.95rem;
-        }
-
-        /* --- ERROR POPUP --- */
-        .error-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(4px);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .error-overlay.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .error-popup {
-            background: var(--drawer-bg);
-            width: 90%;
-            max-width: 320px;
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            text-align: center;
-            transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border: 1px solid var(--border-color);
-        }
-
-        .error-overlay.visible .error-popup {
-            transform: scale(1);
-        }
-
-        .error-icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .error-title {
-            font-weight: 800;
-            font-size: 1.1rem;
-            color: #E74C3C;
-            margin-bottom: 8px;
-        }
-
-        .error-message {
-            font-size: 0.9rem;
-            color: var(--text-color);
-            margin-bottom: 20px;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-
-        .error-btn {
-            background: #E74C3C;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            font-size: 0.95rem;
-            transition: background 0.2s;
-        }
-
-        .error-btn:hover {
-            background: #C0392B;
         }
 
         /* --- CHAT AREA --- */
@@ -573,29 +572,79 @@
 </head>
 <body>
 
-    <header>
-        <div class="header-title">TutorBot</div>
-        
-        <div class="header-controls">
-            <!-- Theme Toggle -->
-            <button class="icon-btn" id="themeToggle" title="Theme">
-                <svg id="themeIcon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-            </button>
-
-            <!-- Sound Toggle -->
-            <button class="icon-btn" id="speakerToggle" title="Sound">
-                <svg id="speakerIcon" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen">
+        <div class="login-card">
+            <div class="login-title">TutorBot 🎓</div>
+            <div class="login-subtitle">Sign in to access your French lessons</div>
+            
+            <button class="google-btn" id="loginBtn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.26.81-.58z" fill="#FBBC05"></path>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+                </svg>
+                Sign in with Google
             </button>
             
-            <!-- Settings Toggle -->
-            <button class="icon-btn" id="settingsToggle" title="Settings" style="display:none;">
-                <svg viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
-            </button>
+            <div id="loginError" style="color: #E74C3C; margin-top: 20px; font-size: 0.9rem; display: none;"></div>
         </div>
-    </header>
+    </div>
 
-    <!-- SETTINGS DRAWER -->
-    <!-- Removed for this version as Voice Selection is not applicable -->
+    <!-- MAIN CONTENT (Wrapped for visibility toggle) -->
+    <div id="app-content">
+        <header>
+            <div class="header-title">TutorBot</div>
+            
+            <div class="header-controls">
+                <!-- Theme Toggle -->
+                <button class="icon-btn" id="themeToggle" title="Theme">
+                    <svg id="themeIcon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+                </button>
+    
+                <!-- Sound Toggle -->
+                <button class="icon-btn" id="speakerToggle" title="Sound">
+                    <svg id="speakerIcon" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                </button>
+                
+                <!-- Settings Toggle -->
+                <button class="icon-btn" id="settingsToggle" title="Settings" style="display:none;">
+                    <svg viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
+                </button>
+                
+                <!-- Logout (Small X) -->
+                <button class="icon-btn" id="logoutBtn" title="Logout">
+                    <svg viewBox="0 0 24 24"><path d="M9 21h6v-2H9v2zm3-19C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm2-8h4l-5-5-5 5h4v4h2v-4z"/></svg>
+                </button>
+            </div>
+        </header>
+    
+        <!-- FLOATING AVATAR -->
+        <div class="floating-avatar">
+            <img src="https://randomuser.me/api/portraits/men/46.jpg" alt="Tutor Face">
+        </div>
+    
+        <!-- CHAT CONTAINER -->
+        <div id="chat-container">
+            <div class="message bot">
+                Il est 8h28. La réunion commence dans deux minutes. Tu peux m'expliquer pourquoi tu n'es pas encore là ?
+            </div>
+        </div>
+    
+        <!-- FOOTER -->
+        <footer>
+            <div class="input-group">
+                <div class="text-input-container">
+                    <textarea id="userInput" placeholder="Reply..." onkeydown="handleEnter(event)"></textarea>
+                    <button id="sendBtn" onclick="sendMessage()">Send</button>
+                </div>
+                <button id="micBtn" title="Speak">
+                    <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+                </button>
+            </div>
+        </footer>
+    </div>
 
     <!-- ERROR POPUP -->
     <div id="errorOverlay" class="error-overlay">
@@ -607,47 +656,113 @@
         </div>
     </div>
 
-    <!-- FLOATING AVATAR -->
-    <div class="floating-avatar">
-        <!-- Open Source Human Face (Placeholder for realistic Tutor) -->
-        <img src="https://randomuser.me/api/portraits/men/46.jpg" alt="Tutor Face">
-    </div>
+    <!-- FIREBASE AND APP LOGIC -->
+    <script type="module">
+        // Import Firebase SDK (Modern Modular Syntax)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    <!-- CHAT CONTAINER -->
-    <div id="chat-container">
-        <!-- Initial message without checkmark -->
-        <div class="message bot">
-            Il est 8h28. La réunion commence dans deux minutes. Tu peux m'expliquer pourquoi tu n'es pas encore là ?
-        </div>
-    </div>
+        // --- ACCESS CONTROL LIST ---
+        // REPLACE with the actual email addresses allowed to use the bot
+        const ALLOWED_EMAILS = [
+            "adarshkadam39@gmail.com",
+            "basile@pretaparler.ch"
+        ];
 
-    <!-- FOOTER -->
-    <footer>
-        <div class="input-group">
-            <div class="text-input-container">
-                <textarea id="userInput" placeholder="Reply..." onkeydown="handleEnter(event)"></textarea>
-                <button id="sendBtn" onclick="sendMessage()">Send</button>
-            </div>
-            <button id="micBtn" title="Speak">
-                <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
-            </button>
-        </div>
-    </footer>
+        // --- FIREBASE CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBgXK0rmDGRYEmFsswkCE5TRDbKkCeheAQ",
+            authDomain: "basileschatbot.firebaseapp.com",
+            projectId: "basileschatbot",
+            storageBucket: "basileschatbot.firebasestorage.app",
+            messagingSenderId: "343337194190",
+            appId: "1:343337194190:web:b5ec38406a4172ae74f69f",
+            measurementId: "G-F6Y0XRYJ7B"
+        };
 
-    <script>
-        // --- CONFIG & STATE ---
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // --- UI ELEMENTS FOR LOGIN ---
+        const loginScreen = document.getElementById('login-screen');
+        const appContent = document.getElementById('app-content');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // --- AUTH LOGIC ---
+        loginBtn.addEventListener('click', () => {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    // Successful login handled by onAuthStateChanged
+                    console.log("Sign-in successful", result.user.email);
+                })
+                .catch((error) => {
+                    console.error("Login Error:", error);
+                    let msg = "Login Failed: " + error.message;
+                    
+                    // Specific handling for the Unauthorized Domain error
+                    if (error.code === 'auth/unauthorized-domain') {
+                        const domain = window.location.hostname;
+                        msg = `⚠️ <strong>Domain Not Authorized</strong><br><br>
+                        1. Go to Firebase Console > Authentication > Settings > Authorized Domains.<br>
+                        2. Add <code>${domain}</code> to the list.`;
+                        
+                        // If running in the AI Preview window, it won't work
+                        if (domain.includes('googleusercontent') || domain === '') {
+                             msg += `<br><br><em>Note: Google Login does not work inside this AI Preview window. Please download the file and run it locally.</em>`;
+                        }
+                    } else if (error.code === 'auth/popup-closed-by-user') {
+                        msg = "Login cancelled.";
+                    }
+
+                    loginError.innerHTML = msg; // Changed to innerHTML to support breaks/bold
+                    loginError.style.display = 'block';
+                });
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in. Check if they are allowed.
+                if (ALLOWED_EMAILS.includes(user.email)) {
+                    // Allowed
+                    loginScreen.style.display = 'none';
+                    appContent.style.display = 'flex';
+                    // Re-initialize audio context if needed or logging
+                    console.log("Welcome", user.email);
+                } else {
+                    // Not Allowed
+                    console.warn("Access Denied for", user.email);
+                    loginError.textContent = "Access Denied: " + user.email + " is not authorized.";
+                    loginError.style.display = 'block';
+                    // Force sign out
+                    signOut(auth);
+                }
+            } else {
+                // No user is signed in.
+                loginScreen.style.display = 'flex';
+                appContent.style.display = 'none';
+            }
+        });
+
+
+        // --- CHAT APP LOGIC (Previous Code) ---
+        // NOTE: Since we are in a module, we need to attach global handlers to window
+        
         const STORAGE_KEY = 'tutor_bot_settings_v1';
-        // NEW WORKER URL
         const WORKER_URL = 'https://my-secure-chat-api.adraxsh.workers.dev/';
         
         let chatHistory = [];
         let audioEnabled = false; 
-        // Google Translate Mode: No voice selection available
-        let settings = { 
-            theme: 'light' 
-        };
+        let settings = { theme: 'light' };
 
-        // --- DOM ELEMENTS ---
+        // DOM ELEMENTS
         const chatContainer = document.getElementById('chat-container');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
@@ -659,13 +774,12 @@
         const errorOverlay = document.getElementById('errorOverlay');
         const errorMessageDiv = document.getElementById('errorMessage');
 
-        // --- ICONS (SVG Strings) ---
+        // ICONS
         const SVG_MOON = '<path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>';
         const SVG_SUN = '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v3h3v-3zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v3h3v-3h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>';
         const SVG_MUTE = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
         const SVG_SOUND = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
 
-        // --- SYSTEM PROMPT ---
         const systemInstruction = `
         Rôle : Patron exigent, strict et en colère.
         CONTEXTE : Il est 8h28, réunion à 8h30. Tu es furieux.
@@ -675,46 +789,34 @@
         3. Corriger GENTIMENT le français si fautes, puis reprendre le ton colère.
         `;
 
-        // --- INITIALIZATION ---
+        // Initialization
         function init() {
             loadSettings();
             applyTheme(settings.theme);
         }
 
-        // --- ERROR HANDLING ---
+        // Error Handling
+        window.closeErrorPopup = function() {
+            errorOverlay.classList.remove('visible');
+        }
         function showErrorPopup(msg) {
             errorMessageDiv.textContent = msg;
             errorOverlay.classList.add('visible');
         }
 
-        function closeErrorPopup() {
-            errorOverlay.classList.remove('visible');
-        }
-
-        // --- THEME LOGIC ---
+        // Theme
         themeToggle.addEventListener('click', () => {
             const newTheme = settings.theme === 'light' ? 'dark' : 'light';
             settings.theme = newTheme;
             applyTheme(newTheme);
             saveSettings();
         });
-
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             themeIcon.innerHTML = theme === 'light' ? SVG_SUN : SVG_MOON;
         }
 
-        // --- AUTO FOCUS ---
-        document.addEventListener('keydown', (e) => {
-            const tag = document.activeElement.tagName;
-            if (tag !== 'TEXTAREA' && tag !== 'INPUT' && tag !== 'SELECT') {
-                if (!e.ctrlKey && !e.metaKey && !e.altKey && e.key.length === 1) {
-                    userInput.focus();
-                }
-            }
-        });
-
-        // --- AUDIO TOGGLE ---
+        // Audio Toggle
         speakerToggle.addEventListener('click', () => {
             audioEnabled = !audioEnabled;
             if (audioEnabled) {
@@ -723,68 +825,18 @@
             } else {
                 speakerIcon.innerHTML = SVG_MUTE;
                 speakerToggle.classList.remove('active-sound');
-                // Stop any playing audio
-                // Note: Standard HTML Audio elements don't have a global cancel, 
-                // but this flag prevents new chunks from starting.
             }
         });
 
-        // --- CHAT LOGIC ---
-        function handleEnter(e) {
+        // Chat Handlers (Attached to Window for HTML calls)
+        window.handleEnter = function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
             }
         }
 
-        function scrollToBottom() {
-            chatContainer.scrollTo({
-                top: chatContainer.scrollHeight,
-                behavior: 'smooth'
-            });
-        }
-
-        function appendMessage(role, text) {
-            const div = document.createElement('div');
-            div.className = `message ${role}`;
-            
-            let innerContent = text.replace(/\n/g, '<br>');
-            
-            // Add checkmark for positive feedback if Bot
-            if (role === 'bot') {
-                const positiveWords = ['bravo', 'excellent', 'bien', 'parfait', 'super', 'bon', 'd\'accord', 'ok'];
-                const firstWord = text.trim().split(' ')[0].toLowerCase().replace(/[.,!]/g, '');
-                if (positiveWords.includes(firstWord)) {
-                    innerContent = `<span class="feedback-icon">✅</span>` + innerContent;
-                }
-            }
-            
-            div.innerHTML = innerContent;
-            chatContainer.appendChild(div);
-            scrollToBottom();
-        }
-
-        // --- LOADING INDICATOR ---
-        function showLoadingIndicator() {
-            const div = document.createElement('div');
-            div.className = 'typing-indicator';
-            div.id = 'loadingIndicator';
-            div.innerHTML = `
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-            `;
-            chatContainer.appendChild(div);
-            scrollToBottom();
-            return div;
-        }
-
-        function removeLoadingIndicator() {
-            const el = document.getElementById('loadingIndicator');
-            if (el) el.remove();
-        }
-
-        async function sendMessage() {
+        window.sendMessage = async function() {
             const text = userInput.value.trim();
             if (!text) return;
             
@@ -792,137 +844,104 @@
             appendMessage('user', text);
             sendBtn.disabled = true;
 
-            // Prepare messages in OpenAI format for the Cloudflare Worker
-            const messages = [
-                { role: 'system', content: systemInstruction }
-            ];
-            
+            const messages = [{ role: 'system', content: systemInstruction }];
             chatHistory.forEach(msg => {
                 messages.push({
-                    role: msg.role === 'user' ? 'user' : 'assistant', // Map 'bot' to 'assistant'
+                    role: msg.role === 'user' ? 'user' : 'assistant',
                     content: msg.text
                 });
             });
-            
             messages.push({ role: 'user', content: text });
 
-            // Show Typing Indicator
             showLoadingIndicator();
 
             try {
-                // Call the Cloudflare Worker
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        messages: messages
-                    })
+                    body: JSON.stringify({ messages: messages })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Worker API Error: ${response.status} ${response.statusText}`);
-                }
+                if (!response.ok) throw new Error(`Worker API Error: ${response.status}`);
 
                 const data = await response.json();
-                
-                // Parse OpenAI format (data.choices[0].message.content)
                 const botText = data.choices?.[0]?.message?.content || "(*Error: No response content*)";
 
-                // Remove Indicator
                 removeLoadingIndicator();
 
                 if (botText) {
                     appendMessage('bot', botText);
-                    speakText(botText); // Uses new Google TTS logic
-                    
+                    speakText(botText);
                     chatHistory.push({ role: 'user', text: text });
                     chatHistory.push({ role: 'bot', text: botText });
                 }
             } catch (err) {
                 removeLoadingIndicator();
                 console.error(err);
-                showErrorPopup(err.message || "Connection Error. Please retry.");
+                alert("Error: " + (err.message || "Connection Error"));
             } finally {
                 sendBtn.disabled = false;
             }
         }
 
-        // --- NEW GOOGLE TTS HACK ---
+        // Google TTS Hack
         function speakText(text) {
             if (!audioEnabled) return;
-
-            // OPTIMIZATION: Only split if text is too long for the API (~200 char limit)
-            // This prevents awkward pauses in short sentences.
-            let chunks = [];
-            if (text.length > 180) {
-                 chunks = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
-            } else {
-                 chunks = [text];
-            }
-
+            const chunks = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
             let index = 0;
 
             function playNext() {
                 if (index >= chunks.length || !audioEnabled) return;
-
                 const cleanText = chunks[index].trim();
-                if (!cleanText) {
-                    index++;
-                    playNext();
-                    return;
-                }
+                if (!cleanText) { index++; playNext(); return; }
 
                 const encodedText = encodeURIComponent(cleanText);
                 const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=fr&client=tw-ob`;
                 
                 const audio = new Audio(url);
-                audio.playbackRate = 1.0; // Increased speed to normal (was 0.9)
-
-                audio.onended = function() {
-                    index++;
-                    playNext();
-                };
-                
-                audio.onerror = function(e) {
-                    console.error("Audio playback error", e);
-                    // Try next chunk if one fails
-                    index++;
-                    playNext();
-                };
-
-                // Play needs user interaction context, which we have from the 'Send' click
+                audio.playbackRate = 1.0; 
+                audio.onended = function() { index++; playNext(); };
+                audio.onerror = function(e) { console.error("Audio error", e); index++; playNext(); };
                 audio.play().catch(e => console.error("Play error:", e));
             }
-
             playNext();
         }
 
-        // Mic Input
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'fr-FR';
-            recognition.continuous = false;
-            
-            recognition.onstart = () => micBtn.classList.add('active');
-            recognition.onend = () => micBtn.classList.remove('active');
-            recognition.onresult = (e) => {
-                userInput.value = e.results[0][0].transcript;
-                userInput.focus();
-            };
-            
-            micBtn.addEventListener('click', () => {
-                try { recognition.start(); } catch(e) { recognition.stop(); }
-            });
-        } else {
-            micBtn.style.display = 'none';
+        // Helper UI functions
+        function appendMessage(role, text) {
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+            let innerContent = text.replace(/\n/g, '<br>');
+            if (role === 'bot') {
+                const positiveWords = ['bravo', 'excellent', 'bien', 'parfait', 'super', 'bon', 'd\'accord', 'ok'];
+                const firstWord = text.trim().split(' ')[0].toLowerCase().replace(/[.,!]/g, '');
+                if (positiveWords.includes(firstWord)) innerContent = `<span class="feedback-icon">✅</span>` + innerContent;
+            }
+            div.innerHTML = innerContent;
+            chatContainer.appendChild(div);
+            scrollToBottom();
         }
 
-        // --- STORAGE ---
-        function saveSettings() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+        function scrollToBottom() {
+            chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
         }
 
+        function showLoadingIndicator() {
+            const div = document.createElement('div');
+            div.className = 'typing-indicator';
+            div.id = 'loadingIndicator';
+            div.innerHTML = `<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
+            chatContainer.appendChild(div);
+            scrollToBottom();
+        }
+
+        function removeLoadingIndicator() {
+            const el = document.getElementById('loadingIndicator');
+            if (el) el.remove();
+        }
+
+        // Storage
+        function saveSettings() { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); }
         function loadSettings() {
             try {
                 const saved = localStorage.getItem(STORAGE_KEY);
@@ -930,9 +949,21 @@
             } catch(e) { console.error(e); }
         }
 
-        // Start
-        init();
+        // Mic Init
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'fr-FR';
+            recognition.continuous = false;
+            recognition.onstart = () => micBtn.classList.add('active');
+            recognition.onend = () => micBtn.classList.remove('active');
+            recognition.onresult = (e) => { userInput.value = e.results[0][0].transcript; userInput.focus(); };
+            micBtn.addEventListener('click', () => { try { recognition.start(); } catch(e) { recognition.stop(); } });
+        } else {
+            micBtn.style.display = 'none';
+        }
 
+        init();
     </script>
 </body>
 </html>
