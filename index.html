@@ -938,10 +938,11 @@
             showLoadingIndicator();
 
             try {
+                // 1. Get Text Response (OpenAI via Worker)
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: messages })
+                    body: JSON.stringify({ messages: messages }) // Send messages implies Chat request
                 });
 
                 if (!response.ok) throw new Error(`Worker API Error: ${response.status}`);
@@ -953,41 +954,50 @@
 
                 if (botText) {
                     appendMessage('bot', botText);
-                    speakText(botText);
                     chatHistory.push({ role: 'user', text: text });
                     chatHistory.push({ role: 'bot', text: botText });
+                    
+                    // 2. Get Audio Response (ElevenLabs via Worker)
+                    speakText(botText);
                 }
             } catch (err) {
                 removeLoadingIndicator();
                 console.error(err);
-                // Replaced annoying alert with the nice popup
                 window.showErrorPopup("Error: " + (err.message || "Connection Error"));
             } finally {
                 sendBtn.disabled = false;
             }
         }
 
-        // Google TTS Hack
-        function speakText(text) {
+        // --- ELEVENLABS TTS (Secure via Worker) ---
+        async function speakText(text) {
             if (!audioEnabled) return;
-            const chunks = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [text];
-            let index = 0;
 
-            function playNext() {
-                if (index >= chunks.length || !audioEnabled) return;
-                const cleanText = chunks[index].trim();
-                if (!cleanText) { index++; playNext(); return; }
+            try {
+                // We send a specific 'type: tts' to tell the worker to use ElevenLabs
+                const response = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        type: 'tts', 
+                        text: text 
+                    })
+                });
 
-                const encodedText = encodeURIComponent(cleanText);
-                const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=fr&client=tw-ob`;
+                if (!response.ok) throw new Error("Audio generation failed");
+
+                // The worker returns the raw audio file (blob)
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
                 
-                const audio = new Audio(url);
-                audio.playbackRate = 1.0; 
-                audio.onended = function() { index++; playNext(); };
-                audio.onerror = function(e) { console.error("Audio error", e); index++; playNext(); };
-                audio.play().catch(e => console.error("Play error:", e));
+                const audio = new Audio(audioUrl);
+                audio.onended = () => URL.revokeObjectURL(audioUrl); // Cleanup memory
+                audio.play().catch(e => console.error("Autoplay blocked:", e));
+
+            } catch (e) {
+                console.error("TTS Error:", e);
+                // Optional: Fallback to silent or show error
             }
-            playNext();
         }
 
         // Helper UI functions
