@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TutorBot Interface</title>
+    <title>Planète Immo - Agent Virtuel</title>
     <style>
         :root {
             /* iOS EDUCATIONAL THEME (Default/Light) */
@@ -32,7 +32,7 @@
             --border-color: #E1E8ED;
         }
 
-        /* DARK MODE (Adapted for iOS style) */
+        /* DARK MODE */
         [data-theme="dark"] {
             --bg-color: #1a2634;
             --header-bg: rgba(26, 38, 52, 0.9);
@@ -138,6 +138,30 @@
             margin-right: 12px;
         }
 
+        /* --- OFFLINE BANNER --- */
+        #offline-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #D32F2F; /* Red warning */
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            z-index: 2000;
+            transform: translateY(-100%);
+            visibility: hidden;
+            transition: transform 0.3s ease, visibility 0.3s ease;
+            cursor: pointer;
+        }
+        
+        #offline-banner.visible {
+            transform: translateY(0);
+            visibility: visible;
+        }
+
         /* --- HEADER --- */
         header {
             padding: 1rem 1.5rem;
@@ -153,7 +177,7 @@
         }
 
         .header-title {
-            font-weight: 800; /* Bold as requested */
+            font-weight: 800;
             font-size: 1.3rem;
             letter-spacing: -0.5px;
             color: var(--text-color);
@@ -197,24 +221,32 @@
             width: 100%;
         }
 
-        /* --- DRAWER (Settings) --- */
-        /* HIDDEN FOR GOOGLE TRANSLATE MODE (No voice selection available) */
-        .voice-drawer {
-            display: none; 
+        /* --- INSTRUCTION BOX --- */
+        .instruction-box {
+            background-color: #E3F2FD;
+            border-left: 4px solid #2E5C8A;
+            color: #2C3E50;
+            padding: 1rem;
+            margin: 1rem 1.5rem 0 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            box-shadow: var(--bubble-shadow);
+        }
+        
+        [data-theme="dark"] .instruction-box {
+            background-color: #2C3E50;
+            border-left: 4px solid #607D8B;
+            color: #ECF0F1;
         }
 
-        select {
-            width: 100%;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 12px;
-            font-family: inherit;
-            outline: none;
-            border-radius: 12px;
-            -webkit-appearance: none;
-            cursor: pointer;
-            font-size: 0.95rem;
+        .instruction-label {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            color: var(--sub-text);
+            margin-bottom: 4px;
+            display: block;
         }
 
         /* --- CHAT AREA --- */
@@ -224,7 +256,7 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem; /* Airy spacing */
+            gap: 1.5rem;
             scroll-behavior: smooth;
             padding-bottom: 140px; 
             position: relative;
@@ -240,6 +272,38 @@
             font-size: 1rem;
             box-shadow: var(--bubble-shadow);
             word-wrap: break-word;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Show copy button on hover (desktop) */
+        .message:hover .copy-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Message Text Wrapper */
+        .message-text {
+            word-wrap: break-word;
+        }
+
+        /* Timestamp */
+        .message-timestamp {
+            font-size: 0.65rem;
+            opacity: 0.6;
+            margin-top: 4px;
+            align-self: flex-end;
+            user-select: none;
+        }
+        
+        /* Date Divider */
+        .date-divider {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--sub-text);
+            margin: 12px 0 4px 0;
+            opacity: 0.8;
+            font-weight: 500;
         }
 
         /* Bot Message (Left) */
@@ -247,7 +311,7 @@
             align-self: flex-start;
             background-color: var(--bot-bubble-bg);
             color: var(--bot-text);
-            border-radius: 20px 20px 20px 4px; /* Pill shape with tail spot */
+            border-radius: 20px 20px 20px 4px;
             margin-left: 10px; 
             margin-top: 10px; 
         }
@@ -319,6 +383,37 @@
             font-size: 1.1em;
         }
 
+        /* Copy Button */
+        .copy-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 24px;
+            height: 24px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            color: var(--sub-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.1);
+            color: var(--mic-grad-start);
+        }
+
+        .copy-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
         /* Typing Indicator */
         .typing-indicator {
             display: flex;
@@ -363,14 +458,73 @@
             40% { transform: scale(1); }
         }
 
-        .sender-name {
-            display: none; 
+        /* --- TRANSLATION TOOLTIP --- */
+        #translation-tooltip {
+            position: fixed;
+            background: rgba(33, 33, 33, 0.95);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            max-width: 300px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(4px);
+            text-align: center;
+            line-height: 1.4;
+            top: -9999px;
+            left: -9999px;
+        }
+
+        #translation-tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- TOAST NOTIFICATIONS --- */
+        .toast-notification {
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .toast-notification.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Retry Toast */
+        #retry-toast {
+            background: rgba(255, 152, 0, 0.95);
+            color: white;
+        }
+
+        /* Copy Toast */
+        #copy-toast {
+            background: rgba(76, 175, 80, 0.95);
+            color: white;
         }
 
         /* --- FOOTER (Floating) --- */
         footer {
             padding: 0 1.5rem 1.5rem 1.5rem;
-            /* Default Padding for Desktop */
             padding-left: 115px; 
             background: transparent;
             flex-shrink: 0;
@@ -378,7 +532,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            width: auto; /* Changed from 100% to auto + left/right 0 */
+            width: auto;
             z-index: 20;
             pointer-events: none;
         }
@@ -393,7 +547,6 @@
             pointer-events: auto;
         }
 
-        /* Text Input Container */
         .text-input-container {
             flex-grow: 1;
             background: var(--input-area-bg);
@@ -402,7 +555,8 @@
             padding: 5px;
             display: flex;
             align-items: center;
-            min-width: 0; /* Important for flex child shrinkage */
+            min-width: 0;
+            padding-right: 15px;
         }
 
         textarea {
@@ -419,7 +573,16 @@
             line-height: 1.5;
         }
 
-        /* Send Button */
+        #char-count {
+            font-size: 0.7rem;
+            color: #999;
+            margin: 0 8px;
+            flex-shrink: 0;
+            min-width: 50px;
+            text-align: right;
+            transition: color 0.3s;
+        }
+
         #sendBtn {
             background: transparent;
             color: var(--mic-grad-start);
@@ -432,9 +595,33 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Large Mic Button */
+        #sendBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Spinner */
+        .btn-spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid currentColor;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         #micBtn {
             width: 56px;
             height: 56px;
@@ -447,7 +634,7 @@
             justify-content: center;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(46, 92, 138, 0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
             flex-shrink: 0;
         }
 
@@ -457,6 +644,25 @@
 
         #micBtn.active {
             animation: pulse 1.5s infinite;
+        }
+
+        #micBtn:disabled {
+            cursor: not-allowed;
+            opacity: 0.5; 
+            box-shadow: none;
+        }
+
+        /* Shortcuts Hint */
+        .shortcuts-hint {
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--sub-text);
+            opacity: 0.7;
+            pointer-events: none;
         }
 
         /* --- FLOATING AVATAR --- */
@@ -492,7 +698,6 @@
 
         /* --- MOBILE OPTIMIZATIONS --- */
         @media (max-width: 600px) {
-            /* Shrink avatar to save space */
             .floating-avatar {
                 width: 50px;
                 height: 50px;
@@ -500,56 +705,22 @@
                 left: 10px;
                 border-width: 2px;
             }
-            
-            /* Adjust footer padding to close the gap */
             footer {
-                padding-left: 70px; /* Space for avatar */
-                padding-right: 15px; /* Added right padding to bring mic in */
+                padding-left: 70px;
+                padding-right: 15px;
                 padding-bottom: 10px; 
                 padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
             }
-            
-            /* Reduce gap between input and mic */
-            .input-group {
-                gap: 8px;
-            }
-            
-            /* Smaller Mic Button */
-            #micBtn {
-                width: 45px;
-                height: 45px;
-            }
-            
-            #micBtn svg {
-                width: 22px;
-                height: 22px;
-            }
-            
-            /* Ensure text input height matches */
-            .text-input-container {
-                min-height: 45px;
-            }
-            
-            textarea {
-                height: 45px;
-                padding: 10px 12px;
-                font-size: 16px; /* Prevents iOS zoom on focus */
-            }
-            
-            #sendBtn {
-                height: 45px;
-                padding: 0 10px;
-            }
-
-            /* Adjust Chat Container Padding */
-            #chat-container {
-                padding: 1rem;
-                padding-bottom: 120px;
-            }
-            
-            .message {
-                max-width: 88%;
-            }
+            .input-group { gap: 8px; }
+            #micBtn { width: 45px; height: 45px; }
+            #micBtn svg { width: 22px; height: 22px; }
+            .text-input-container { min-height: 45px; }
+            textarea { height: 45px; padding: 10px 12px; font-size: 16px; }
+            #sendBtn { height: 45px; padding: 0 10px; }
+            #chat-container { padding: 1rem; padding-bottom: 120px; }
+            .message { max-width: 88%; }
+            .toast-notification { bottom: 100px; }
+            .shortcuts-hint { display: none; }
         }
 
         @keyframes pulse {
@@ -558,12 +729,8 @@
             100% { box-shadow: 0 0 0 0 rgba(46, 92, 138, 0); }
         }
 
-        /* SVG Sizing */
         svg { width: 24px; height: 24px; fill: currentColor; }
-        
         #micBtn svg { width: 28px; height: 28px; }
-
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
@@ -578,12 +745,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            
-            /* UPDATED: Fully hide by default so no "ghost" text appears */
             opacity: 0;
             visibility: hidden; 
             pointer-events: none;
-            
             transition: opacity 0.3s ease, visibility 0.3s ease;
         }
 
@@ -619,7 +783,7 @@
         .error-title {
             font-weight: 800;
             font-size: 1.1rem;
-            color: #E74C3C;
+            color: #D32F2F;
             margin-bottom: 8px;
         }
 
@@ -632,7 +796,7 @@
         }
 
         .error-btn {
-            background: #E74C3C;
+            background: #D32F2F;
             color: white;
             border: none;
             padding: 10px 20px;
@@ -645,7 +809,7 @@
         }
 
         .error-btn:hover {
-            background: #C0392B;
+            background: #B71C1C;
         }
 
     </style>
@@ -655,8 +819,8 @@
     <!-- LOGIN SCREEN -->
     <div id="login-screen">
         <div class="login-card">
-            <div class="login-title">TutorBot 🎓</div>
-            <div class="login-subtitle">Sign in to access your French lessons</div>
+            <div class="login-title">Planète Immo 🏠</div>
+            <div class="login-subtitle">Entraînement au français oral - B1/B2</div>
             
             <button class="google-btn" id="loginBtn">
                 <svg viewBox="0 0 24 24">
@@ -665,73 +829,90 @@
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.26.81-.58z" fill="#FBBC05"></path>
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
                 </svg>
-                Sign in with Google
+                Connexion avec Google
             </button>
             
             <div id="loginError" style="color: #E74C3C; margin-top: 20px; font-size: 0.9rem; display: none;"></div>
         </div>
     </div>
 
-    <!-- MAIN CONTENT (Wrapped for visibility toggle) -->
+    <!-- OFFLINE BANNER -->
+    <div id="offline-banner">⚠️ Pas de connexion Internet</div>
+
+    <!-- MAIN CONTENT -->
     <div id="app-content">
         <header>
-            <div class="header-title">TutorBot</div>
+            <div class="header-title">Planète Immo</div>
             
             <div class="header-controls">
                 <!-- Theme Toggle -->
-                <button class="icon-btn" id="themeToggle" title="Theme">
+                <button class="icon-btn" id="themeToggle" title="Thème" aria-label="Changer de thème">
                     <svg id="themeIcon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
                 </button>
     
                 <!-- Sound Toggle -->
-                <button class="icon-btn" id="speakerToggle" title="Sound">
+                <button class="icon-btn" id="speakerToggle" title="Son" aria-label="Activer/Désactiver le son">
                     <svg id="speakerIcon" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
                 </button>
                 
-                <!-- Settings Toggle -->
-                <button class="icon-btn" id="settingsToggle" title="Settings" style="display:none;">
-                    <svg viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
-                </button>
-                
                 <!-- Logout (Small X) -->
-                <button class="icon-btn" id="logoutBtn" title="Logout">
+                <button class="icon-btn" id="logoutBtn" title="Déconnexion" aria-label="Se déconnecter">
                     <svg viewBox="0 0 24 24"><path d="M9 21h6v-2H9v2zm3-19C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm2-8h4l-5-5-5 5h4v4h2v-4z"/></svg>
                 </button>
             </div>
         </header>
+
+        <!-- STUDENT INSTRUCTION BOX -->
+        <div class="instruction-box">
+            <span class="instruction-label">Consigne pour l'étudiant :</span>
+            Vous souhaitez visiter un appartement et avoir plus de renseignements après avoir lu une annonce sur internet. Vous appelez l’agence immobilière.
+        </div>
     
         <!-- FLOATING AVATAR -->
         <div class="floating-avatar">
-            <img src="https://randomuser.me/api/portraits/men/46.jpg" alt="Tutor Face">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Agent Immobilier">
         </div>
     
         <!-- CHAT CONTAINER -->
-        <div id="chat-container">
-            <div class="message bot">
-                Il est 8h28. La réunion commence dans deux minutes. Tu peux m'expliquer pourquoi tu n'es pas encore là ?
-            </div>
+        <div id="chat-container" role="log">
+            <!-- Messages injected here -->
         </div>
     
         <!-- FOOTER -->
         <footer>
             <div class="input-group">
                 <div class="text-input-container">
-                    <textarea id="userInput" placeholder="Reply..." onkeydown="handleEnter(event)"></textarea>
-                    <button id="sendBtn" onclick="sendMessage()">Send</button>
+                    <textarea id="userInput" placeholder="Répondre..." onkeydown="handleEnter(event)"></textarea>
+                    <span id="char-count">0/1000</span>
+                    <button id="sendBtn" onclick="sendMessage()">Envoyer</button>
                 </div>
-                <button id="micBtn" title="Speak">
+                <button id="micBtn" title="Parler" aria-label="Microphone">
                     <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
                 </button>
             </div>
+            <!-- KEYBOARD SHORTCUTS HINT -->
+            <div class="shortcuts-hint">⌘K pour écrire • Esc pour effacer • ⌘Enter pour envoyer</div>
         </footer>
+    </div>
+
+    <!-- RETRY TOAST -->
+    <div id="retry-toast" class="toast-notification">
+        <svg style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" fill="currentColor"/></svg>
+        <span id="retry-text">Problème de connexion... nouvelle tentative (1/3)</span>
+    </div>
+
+    <!-- COPY TOAST -->
+    <div id="copy-toast" class="toast-notification">
+        <svg style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" fill="currentColor"/></svg>
+        <span>Copié !</span>
     </div>
 
     <!-- ERROR POPUP -->
     <div id="errorOverlay" class="error-overlay">
         <div class="error-popup">
             <span class="error-icon">⚠️</span>
-            <div class="error-title">API Error</div>
-            <div id="errorMessage" class="error-message">Something went wrong.</div>
+            <div class="error-title">Erreur API</div>
+            <div id="errorMessage" class="error-message">Une erreur est survenue.</div>
             <button class="error-btn" onclick="closeErrorPopup()">OK</button>
         </div>
     </div>
@@ -742,11 +923,45 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // --- CONFIGURATION ---
+        const CONFIG = {
+            API: {
+                WORKER_URL: 'https://my-secure-chat-api.adraxsh.workers.dev/',
+                RETRY_COUNT: 3,
+                RETRY_BASE_DELAY: 1000 // ms
+            },
+            CHAT: {
+                STORAGE_KEY: 'planete_immo_history',
+                MAX_HISTORY_LENGTH: 40, // 20 exchanges
+                MAX_CHARS: 1000,
+                SCROLL_THRESHOLD: 150 // px
+            },
+            UI: {
+                DEBOUNCE_DELAY: 300, // ms
+                MAX_CACHE_SIZE: 100, // translation cache entries
+                TOAST_DURATION: 2000 // ms
+            },
+            ERRORS: {
+                NETWORK: "Pas de connexion Internet. Veuillez vérifier votre réseau.",
+                API_GENERIC: "Erreur serveur. Veuillez réessayer plus tard.",
+                API_AUTH: "Erreur d'authentification. Veuillez recharger la page.",
+                API_RATE_LIMIT: "Trop de requêtes. Veuillez patienter.",
+                INPUT_TOO_LONG: "Message trop long ! Limité à {0} caractères.",
+                MIC_NO_SPEECH: "Aucune parole détectée. Parlez plus fort.",
+                MIC_NOT_ALLOWED: "Accès micro refusé. Vérifiez les paramètres du navigateur.",
+                MIC_NO_DEVICE: "Aucun microphone trouvé.",
+                AUDIO_PLAYBACK: "Impossible de lire l'audio.",
+                TRANSLATION_FAIL: "Échec de la traduction.",
+                UNKNOWN: "Une erreur inconnue est survenue."
+            }
+        };
+
         // --- ACCESS CONTROL LIST ---
-        // REPLACE with the actual email addresses allowed to use the bot
         const ALLOWED_EMAILS = [
             "adarshkadam39@gmail.com",
-            "basile@pretaparler.ch"
+            "basile@pretaparler.ch",
+            "basilejupy6@gmail.com",
+            "isabelle@pretaparler.ch"
         ];
 
         // --- FIREBASE CONFIGURATION ---
@@ -776,71 +991,60 @@
         loginBtn.addEventListener('click', () => {
             signInWithPopup(auth, provider)
                 .then((result) => {
-                    // Successful login handled by onAuthStateChanged
-                    console.log("Sign-in successful", result.user.email);
+                    console.log("Connexion réussie", result.user.email);
                 })
                 .catch((error) => {
-                    console.error("Login Error:", error);
-                    let msg = "Login Failed: " + error.message;
+                    console.error("Erreur Connexion:", error);
+                    let msg = "Échec connexion: " + error.message;
                     
-                    // Specific handling for the Unauthorized Domain error
                     if (error.code === 'auth/unauthorized-domain') {
                         const domain = window.location.hostname;
-                        msg = `⚠️ <strong>Domain Not Authorized</strong><br><br>
-                        1. Go to Firebase Console > Authentication > Settings > Authorized Domains.<br>
-                        2. Add <code>${domain}</code> to the list.`;
-                        
-                        // If running in the AI Preview window, it won't work
-                        if (domain.includes('googleusercontent') || domain === '') {
-                             msg += `<br><br><em>Note: Google Login does not work inside this AI Preview window. Please download the file and run it locally.</em>`;
-                        }
+                        msg = `⚠️ <strong>Domaine non autorisé</strong><br><br>
+                        1. Allez dans Firebase Console > Authentication > Settings > Authorized Domains.<br>
+                        2. Ajoutez <code>${domain}</code> à la liste.`;
                     } else if (error.code === 'auth/popup-closed-by-user') {
-                        msg = "Login cancelled.";
+                        msg = "Connexion annulée.";
                     }
 
-                    loginError.innerHTML = msg; // Changed to innerHTML to support breaks/bold
+                    loginError.innerHTML = msg;
                     loginError.style.display = 'block';
                 });
         });
 
         logoutBtn.addEventListener('click', () => {
             signOut(auth);
+            // Clear local session data on logout if desired
+            // StorageManager.clearAll(); 
         });
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in. Check if they are allowed.
                 if (ALLOWED_EMAILS.includes(user.email)) {
-                    // Allowed
                     loginScreen.style.display = 'none';
                     appContent.style.display = 'flex';
-                    // Re-initialize audio context if needed or logging
-                    console.log("Welcome", user.email);
+                    init(); // Initialize Chat App logic
                 } else {
-                    // Not Allowed
-                    console.warn("Access Denied for", user.email);
-                    loginError.textContent = "Access Denied: " + user.email + " is not authorized.";
+                    console.warn("Accès refusé pour", user.email);
+                    loginError.textContent = "Accès refusé : " + user.email + " n'est pas autorisé.";
                     loginError.style.display = 'block';
-                    // Force sign out
                     signOut(auth);
                 }
             } else {
-                // No user is signed in.
                 loginScreen.style.display = 'flex';
                 appContent.style.display = 'none';
             }
         });
 
 
-        // --- CHAT APP LOGIC (Previous Code) ---
-        // NOTE: Since we are in a module, we need to attach global handlers to window
+        // --- CHAT APP LOGIC ---
         
-        const STORAGE_KEY = 'tutor_bot_settings_v1';
-        const WORKER_URL = 'https://my-secure-chat-api.adraxsh.workers.dev/';
-        
+        // STATE VARIABLES
         let chatHistory = [];
         let audioEnabled = false; 
-        let settings = { theme: 'light' };
+        let settings = { theme: 'light', audioEnabled: false };
+        let lastRenderedDateString = null;
+        let translationController = null;
+        const translationCache = new Map();
 
         // DOM ELEMENTS
         const chatContainer = document.getElementById('chat-container');
@@ -853,54 +1057,296 @@
         const themeIcon = document.getElementById('themeIcon');
         const errorOverlay = document.getElementById('errorOverlay');
         const errorMessageDiv = document.getElementById('errorMessage');
+        const retryToast = document.getElementById('retry-toast');
+        const retryText = document.getElementById('retry-text');
+        const copyToast = document.getElementById('copy-toast');
+        const offlineBanner = document.getElementById('offline-banner');
+        const charCount = document.getElementById('char-count');
+        const translationTooltip = document.createElement('div');
+        translationTooltip.id = 'translation-tooltip';
+        document.body.appendChild(translationTooltip);
 
         // ICONS
         const SVG_MOON = '<path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>';
         const SVG_SUN = '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v3h3v-3zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v3h3v-3h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>';
         const SVG_MUTE = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
         const SVG_SOUND = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+        const SVG_COPY = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
 
+        // --- UTILITIES ---
+        const StorageManager = {
+            getSettings() {
+                try {
+                    const saved = localStorage.getItem(CONFIG.CHAT.STORAGE_KEY + '_settings');
+                    return saved ? JSON.parse(saved) : null;
+                } catch(e) { return null; }
+            },
+            saveSettings(s) {
+                localStorage.setItem(CONFIG.CHAT.STORAGE_KEY + '_settings', JSON.stringify(s));
+            },
+            getHistory() {
+                try {
+                    const saved = localStorage.getItem(CONFIG.CHAT.STORAGE_KEY);
+                    return saved ? JSON.parse(saved) : null;
+                } catch(e) { return null; }
+            },
+            saveHistory(h) {
+                localStorage.setItem(CONFIG.CHAT.STORAGE_KEY, JSON.stringify(h));
+            },
+            clearAll() {
+                localStorage.removeItem(CONFIG.CHAT.STORAGE_KEY);
+            }
+        };
+
+        const APIClient = {
+            async fetchWithRetry(url, options, maxRetries = CONFIG.API.RETRY_COUNT, signal = null) {
+                let attempt = 0;
+                while (attempt <= maxRetries) {
+                    try {
+                        if (signal && signal.aborted) throw new DOMException("Aborted", "AbortError");
+                        const fetchOptions = { ...options };
+                        if (signal) fetchOptions.signal = signal;
+
+                        const response = await fetch(url, fetchOptions);
+                        if (response.ok) {
+                            hideRetryToast();
+                            return response;
+                        }
+
+                        if (response.status === 401 || response.status === 403) throw new Error(CONFIG.ERRORS.API_AUTH);
+                        if (response.status === 429) throw new Error(CONFIG.ERRORS.API_RATE_LIMIT);
+                        if (response.status >= 500) throw new Error(CONFIG.ERRORS.API_GENERIC);
+                        
+                        throw new Error(`Erreur serveur ${response.status}`);
+                    } catch (err) {
+                        if (err.name === 'AbortError' || err.message === CONFIG.ERRORS.API_AUTH) throw err;
+                        attempt++;
+                        if (attempt > maxRetries) throw err;
+                        
+                        showRetryToast(attempt, maxRetries);
+                        const delay = Math.pow(2, attempt - 1) * CONFIG.API.RETRY_BASE_DELAY;
+                        
+                        await new Promise((resolve, reject) => {
+                            const timeout = setTimeout(resolve, delay);
+                            if (signal) {
+                                signal.addEventListener('abort', () => {
+                                    clearTimeout(timeout);
+                                    reject(new DOMException("Aborted", "AbortError"));
+                                });
+                            }
+                        });
+                    }
+                }
+            },
+
+            async chat(messages) {
+                try {
+                    const response = await this.fetchWithRetry(CONFIG.API.WORKER_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ messages: messages })
+                    });
+                    const data = await response.json();
+                    return data.choices?.[0]?.message?.content || "(*Erreur*)";
+                } catch (e) { throw e; }
+            },
+
+            async translate(text, signal) {
+                const translationPrompt = "Translate the following text to English. Output ONLY the English translation.";
+                const messages = [
+                    { role: 'system', content: translationPrompt },
+                    { role: 'user', content: text }
+                ];
+                
+                const response = await this.fetchWithRetry(CONFIG.API.WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: messages })
+                }, 3, signal);
+
+                const data = await response.json();
+                return data.choices?.[0]?.message?.content || CONFIG.ERRORS.TRANSLATION_FAIL;
+            },
+
+            async tts(text) {
+                const response = await this.fetchWithRetry(CONFIG.API.WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'tts', text: text })
+                });
+                return await response.blob();
+            }
+        };
+
+        const AudioManager = {
+            currentAudio: null,
+            async playBlob(blob) {
+                this.stop();
+                const audioUrl = URL.createObjectURL(blob);
+                this.currentAudio = new Audio(audioUrl);
+                const cleanup = () => {
+                    URL.revokeObjectURL(audioUrl);
+                    if(this.currentAudio && this.currentAudio.src === audioUrl) this.currentAudio = null;
+                };
+                this.currentAudio.onended = cleanup;
+                this.currentAudio.onerror = () => { console.error("Erreur lecture audio"); cleanup(); };
+                try { await this.currentAudio.play(); } catch (e) { console.error("Autoplay bloqué:", e); cleanup(); }
+            },
+            stop() {
+                if (this.currentAudio) {
+                    this.currentAudio.pause();
+                    this.currentAudio = null;
+                }
+            }
+        };
+
+        // --- SYSTEM PROMPT ---
         const systemInstruction = `
-        Rôle : Patron exigent, strict et en colère.
-        CONTEXTE : Il est 8h28, réunion à 8h30. Tu es furieux.
-        OBJECTIFS : 
-        1. Être froid, direct, mettre la pression.
-        2. N'accepter que des excuses crédibles.
-        3. Corriger GENTIMENT le français si fautes, puis reprendre le ton colère.
+        Rôle et contexte
+        Tu es un agent immobilier suisse travaillant pour l’agence immobilière Planète Immo, située dans le canton de Vaud.
+        Tu réponds à des appels téléphoniques entrants de clients intéressés par la location d’un appartement.
+
+        L’utilisateur est un client qui t’appelle pour obtenir des informations sur un logement qu’il souhaite visiter et éventuellement louer.
+        Tu incarnes pleinement ton rôle : tu n’es pas une IA, mais un véritable agent immobilier.
+
+        Tu adoptes un style oral, comme lors d’un vrai entretien téléphonique :
+        - phrases simples et naturelles
+        - ton poli, professionnel, formel mais chaleureux
+        - rythme naturel
+        - vocabulaire courant (niveau B1–B2)
+
+        🎯 Objectif pédagogique
+        L’utilisateur est, dans la vraie vie, un étudiant qui apprend le français.
+        Ton objectif principal est de l’entraîner à parler français à l’oral, dans une situation réaliste de recherche de logement.
+        Tu encourages l’utilisateur à parler le plus possible et tu l’aides à s’exprimer avec bienveillance.
+
+        🏠 Contenu possible de la conversation
+        Tu peux parler notamment de :
+        - la localisation de l’appartement (commune, quartier, canton de Vaud)
+        - le loyer, les charges et ce qu’elles comprennent
+        - la superficie et le nombre de pièces
+        - les meubles et équipements (meublé / non meublé)
+        - le dépôt de garantie
+        - la durée et les conditions du bail
+        - la régie ou le propriétaire
+        - les voisins et l’environnement
+        - les transports publics, commerces et services à proximité
+        - les conditions pour organiser une visite
+        - d’autres logements disponibles si le client n’est pas satisfait
+
+        Tu peux t’appuyer sur des lieux réels du canton de Vaud (Lausanne, Renens, Nyon, Vevey, Morges, etc.) lorsque cela est pertinent.
+
+        🗣️ Interaction et conduite de l’entretien
+        - Pose une seule question à la fois
+        - Ne fais pas de réponses trop longues
+        - Attends des réponses explicites de l’utilisateur
+        - Si l’utilisateur ne répond pas à la question posée, fais-le lui remarquer poliment
+        - Si l’utilisateur ne comprend pas, reformule ton message simplement
+        - Si l’utilisateur hésite ou bloque, aide-le avec une reformulation ou une suggestion
+
+        📚 Aide pédagogique (TRÈS IMPORTANT)
+        Si l’utilisateur fait une erreur de vocabulaire, de grammaire ou de syntaxe :
+        - ne l’interromps pas
+        - réponds normalement au contenu de son message
+        - en cas d'erreur, ajoute à la fin de ton message une correction douce et bienveillante, par exemple :
+        « Petite correction : on dit plutôt… »
+        « Petite correction : au lieu de…, vous pouvez dire… »
+
+        Si l’utilisateur pose une question sur la grammaire, le vocabulaire ou la syntaxe :
+        - réponds comme le ferait un enseignant de français, de manière claire et bienveillante
+
+        ⚠️ Règles impératives
+        - Reste toujours dans ton rôle
+        - Ne parle qu'en français 
+        - Ne dis jamais que tu es une IA ou un modèle de langage
+        - Respecte toutes les consignes ci-dessus sans exception
+        
+        OUTPUT FORMAT: Every single response must be strictly in this format:
+        [French Text] ||| [English Translation]
+        Example: "Bonjour, comment allez-vous ? ||| Hello, how are you?"
         `;
 
-        // Initialization
+        // Initialization Logic
         function init() {
-            loadSettings();
+            const savedSettings = StorageManager.getSettings();
+            if (savedSettings) settings = { ...settings, ...savedSettings };
+            
             applyTheme(settings.theme);
-        }
-
-        // Error Handling
-        window.closeErrorPopup = function() {
-            errorOverlay.classList.remove('visible');
+            audioEnabled = settings.audioEnabled || false;
+            updateSpeakerUI();
+            
+            loadChatHistory();
+            setTimeout(updateOnlineStatus, 500);
         }
         
-        // Attach to window so it's accessible globally
+        // --- OFFLINE DETECTION ---
+        function updateOnlineStatus() {
+            if (!navigator.onLine) {
+                offlineBanner.classList.add('visible');
+            } else {
+                offlineBanner.classList.remove('visible');
+            }
+        }
+        offlineBanner.addEventListener('click', () => offlineBanner.classList.remove('visible'));
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        // --- HISTORY LOADING ---
+        function loadChatHistory() {
+            const history = StorageManager.getHistory();
+            if (history) {
+                chatHistory = history;
+                chatContainer.innerHTML = '';
+                lastRenderedDateString = null;
+                chatHistory.forEach(msg => {
+                    appendMessage(msg.role, msg.text, msg.translation, false, msg.timestamp);
+                });
+            } else {
+                showDefaultMessage();
+            }
+        }
+
+        function showDefaultMessage() {
+            const initialMsg = "Bonjour, ici l’agence immobilière Planète Immo, que puis-je faire pour vous ?";
+            const initialTrans = "Hello, Planète Immo real estate agency here, how can I help you?";
+            
+            const now = new Date().toISOString();
+            appendMessage('bot', initialMsg, initialTrans, false, now);
+            
+            chatHistory.push({ role: 'bot', text: initialMsg, translation: initialTrans, timestamp: now });
+            StorageManager.saveHistory(chatHistory);
+        }
+
+        // --- GLOBAL WINDOW HELPERS (Called from HTML) ---
+        window.clearHistory = function() {
+            if(confirm("Voulez-vous vraiment effacer la conversation ?")) {
+                StorageManager.clearAll();
+                chatHistory = [];
+                chatContainer.innerHTML = '';
+                lastRenderedDateString = null;
+                showDefaultMessage();
+            }
+        };
+
+        window.closeErrorPopup = function() {
+            errorOverlay.classList.remove('visible');
+        };
+        
         window.showErrorPopup = function(msg) {
             errorMessageDiv.textContent = msg;
             errorOverlay.classList.add('visible');
+        };
+
+        function showRetryToast(attempt, max) {
+            retryText.textContent = `Problème de connexion... essai (${attempt}/${max})`;
+            retryToast.classList.add('visible');
         }
 
-        // Theme
-        themeToggle.addEventListener('click', () => {
-            const newTheme = settings.theme === 'light' ? 'dark' : 'light';
-            settings.theme = newTheme;
-            applyTheme(newTheme);
-            saveSettings();
-        });
-        function applyTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            themeIcon.innerHTML = theme === 'light' ? SVG_SUN : SVG_MOON;
+        function hideRetryToast() {
+            retryToast.classList.remove('visible');
         }
 
-        // Audio Toggle
-        speakerToggle.addEventListener('click', () => {
-            audioEnabled = !audioEnabled;
+        function updateSpeakerUI() {
             if (audioEnabled) {
                 speakerIcon.innerHTML = SVG_SOUND;
                 speakerToggle.classList.add('active-sound');
@@ -908,125 +1354,294 @@
                 speakerIcon.innerHTML = SVG_MUTE;
                 speakerToggle.classList.remove('active-sound');
             }
+        }
+
+        // --- UI HANDLERS ---
+        themeToggle.addEventListener('click', () => {
+            const newTheme = settings.theme === 'light' ? 'dark' : 'light';
+            settings.theme = newTheme;
+            applyTheme(newTheme);
+            StorageManager.saveSettings(settings);
+        });
+        
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            themeIcon.innerHTML = theme === 'light' ? SVG_SUN : SVG_MOON;
+        }
+
+        speakerToggle.addEventListener('click', () => {
+            audioEnabled = !audioEnabled;
+            settings.audioEnabled = audioEnabled;
+            StorageManager.saveSettings(settings);
+            updateSpeakerUI();
+            if (!audioEnabled) AudioManager.stop();
         });
 
-        // Chat Handlers (Attached to Window for HTML calls)
+        userInput.addEventListener('input', () => {
+            const len = userInput.value.length;
+            charCount.textContent = `${len}/${CONFIG.CHAT.MAX_CHARS}`;
+            charCount.style.color = len > CONFIG.CHAT.MAX_CHARS ? '#D32F2F' : '#999';
+        });
+
         window.handleEnter = function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                sendMessage();
+                window.sendMessage();
             }
+        };
+
+        // Shortcuts
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); userInput.focus(); }
+            if (e.key === 'Escape') { if (document.activeElement === userInput) { userInput.value = ''; userInput.dispatchEvent(new Event('input')); } }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); window.sendMessage(); }
+        });
+
+        // --- MESSAGING LOGIC ---
+        function isUserNearBottom() {
+            const threshold = CONFIG.CHAT.SCROLL_THRESHOLD; 
+            const position = chatContainer.scrollTop + chatContainer.clientHeight;
+            return chatContainer.scrollHeight - position <= threshold;
         }
 
         window.sendMessage = async function() {
-            const text = userInput.value.trim();
+            if (sendBtn.disabled) return;
+            let text = userInput.value.trim();
             if (!text) return;
+            if (text.length > CONFIG.CHAT.MAX_CHARS) {
+                window.showErrorPopup(CONFIG.ERRORS.INPUT_TOO_LONG.replace('{0}', CONFIG.CHAT.MAX_CHARS));
+                return;
+            }
             
             userInput.value = '';
-            appendMessage('user', text);
+            charCount.textContent = `0/${CONFIG.CHAT.MAX_CHARS}`;
+            
+            const userTimestamp = new Date().toISOString();
+            const userMsgDiv = appendMessage('user', text, null, true, userTimestamp);
+            
             sendBtn.disabled = true;
+            sendBtn.innerHTML = '<div class="btn-spinner"></div>';
+            micBtn.disabled = true;
+            micBtn.style.opacity = "0.5";
 
+            const userHistoryIndex = chatHistory.length;
+            chatHistory.push({ role: 'user', text: text, translation: null, timestamp: userTimestamp });
+            StorageManager.saveHistory(chatHistory);
+
+            // Fetch User Translation
+            APIClient.translate(text).then(trans => {
+                userMsgDiv.setAttribute('data-translation', trans);
+                if(chatHistory[userHistoryIndex]) {
+                    chatHistory[userHistoryIndex].translation = trans;
+                    StorageManager.saveHistory(chatHistory);
+                }
+                // Refresh tooltip if active
+                const selection = window.getSelection();
+                if (selection.toString().trim() === text) {
+                     const range = selection.getRangeAt(0);
+                     const rect = range.getBoundingClientRect();
+                     showTooltip(rect, trans);
+                }
+            }).catch(e => console.error("Traduction utilisateur échouée", e));
+
+            // Prepare history for API
             const messages = [{ role: 'system', content: systemInstruction }];
             chatHistory.forEach(msg => {
-                messages.push({
-                    role: msg.role === 'user' ? 'user' : 'assistant',
-                    content: msg.text
-                });
+                messages.push({ role: msg.role === 'user' ? 'user' : 'assistant', content: msg.text });
             });
-            messages.push({ role: 'user', content: text });
 
+            const wasAtBottom = isUserNearBottom();
             showLoadingIndicator();
+            if (wasAtBottom) scrollToBottom();
 
             try {
-                // 1. Get Chat Response from OpenAI (via Worker)
-                const response = await fetch(WORKER_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: messages })
-                });
-
-                if (!response.ok) {
-                    const errData = await response.json().catch(() => ({}));
-                    throw new Error(errData.error || `Worker API Error: ${response.status}`);
+                const rawContent = await APIClient.chat(messages);
+                
+                let frenchText = rawContent;
+                let englishTrans = null;
+                
+                if (rawContent.includes('|||')) {
+                    const parts = rawContent.split('|||');
+                    frenchText = parts[0].trim();
+                    englishTrans = parts[1].trim();
                 }
 
-                const data = await response.json();
-                const botText = data.choices?.[0]?.message?.content || "(*Error: No response content*)";
+                let audioBlob = null;
+                if (audioEnabled && frenchText) {
+                    try { audioBlob = await APIClient.tts(frenchText); } catch(e) { console.error("TTS erreur:", e); }
+                }
 
                 removeLoadingIndicator();
 
-                if (botText) {
-                    appendMessage('bot', botText);
-                    chatHistory.push({ role: 'user', text: text });
-                    chatHistory.push({ role: 'bot', text: botText });
-                    
-                    // 2. Play Audio via ElevenLabs (via Worker)
-                    speakText(botText);
+                if (frenchText) {
+                    const botTimestamp = new Date().toISOString();
+                    const botMsgDiv = appendMessage('bot', frenchText, englishTrans, false, botTimestamp);
+                    if (wasAtBottom) scrollToBottom();
+
+                    // Fallback translation if model forgot ||| format
+                    if (!englishTrans) {
+                        APIClient.translate(frenchText).then(trans => {
+                            botMsgDiv.setAttribute('data-translation', trans);
+                            const lastBotIndex = chatHistory.length - 1;
+                            if (chatHistory[lastBotIndex]?.role === 'bot') {
+                                chatHistory[lastBotIndex].translation = trans;
+                                StorageManager.saveHistory(chatHistory);
+                            }
+                        });
+                    }
+
+                    chatHistory.push({ role: 'bot', text: frenchText, translation: englishTrans, timestamp: botTimestamp });
+                    if (chatHistory.length > CONFIG.CHAT.MAX_HISTORY_LENGTH) {
+                        chatHistory = chatHistory.slice(chatHistory.length - CONFIG.CHAT.MAX_HISTORY_LENGTH);
+                    }
+                    StorageManager.saveHistory(chatHistory);
+
+                    if (audioBlob) AudioManager.playBlob(audioBlob);
                 }
+
             } catch (err) {
                 removeLoadingIndicator();
                 console.error(err);
-                // Replaced annoying alert with the nice popup
-                window.showErrorPopup("Error: " + (err.message || "Connection Error"));
+                const errMsg = err.message || CONFIG.ERRORS.UNKNOWN;
+                window.showErrorPopup("Erreur: " + errMsg);
             } finally {
-                sendBtn.disabled = false;
-            }
-        }
-
-        // --- ELEVENLABS TTS (via Secure Worker) ---
-        async function speakText(text) {
-            console.log("Attempting to speak:", text); // DEBUG
-            if (!audioEnabled) {
-                console.log("Audio is disabled. Click the speaker icon to enable."); // DEBUG
-                return;
-            }
-
-            try {
-                console.log("Fetching TTS from worker...");
-                // Request audio from our worker which calls ElevenLabs
-                const response = await fetch(WORKER_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        type: 'tts', 
-                        text: text 
-                    })
-                });
-
-                if (!response.ok) {
-                    const errData = await response.json().catch(() => ({}));
-                    throw new Error(errData.error || `TTS API Error: ${response.status}`);
+                sendBtn.innerHTML = "Envoyer";
+                if (navigator.onLine) {
+                    sendBtn.disabled = false;
+                    micBtn.disabled = false;
+                    micBtn.style.opacity = "1";
+                    userInput.focus();
                 }
+                hideRetryToast();
+            }
+        };
 
-                // Get the blob and play it
-                const audioBlob = await response.blob();
-                console.log("Audio blob received, playing...");
-                const audioUrl = URL.createObjectURL(audioBlob);
+        // --- TRANSLATION TOOLTIP LOGIC ---
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), wait); };
+        }
+        
+        document.addEventListener('selectionchange', debounce(handleSelection, CONFIG.UI.DEBOUNCE_DELAY));
+        document.addEventListener('mousedown', (e) => {
+            if (e.target !== translationTooltip) hideTooltip();
+        });
+
+        function handleSelection() {
+            const selection = window.getSelection();
+            const text = selection.toString().trim();
+            if (translationController) { translationController.abort(); translationController = null; }
+            if (!text) { hideTooltip(); return; }
+
+            let node = selection.anchorNode;
+            while (node && node.nodeType !== 1) node = node.parentNode;
+            let messageDiv = node ? node.closest('.message') : null;
+            if (!messageDiv) return;
+
+            const range = selection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            
+            // Check full message selection
+            let isFullMessage = false;
+            if (messageDiv.hasAttribute('data-translation')) {
+                const divText = messageDiv.textContent.replace('✨', '').trim();
+                if (divText.includes(text) && text.length > divText.length * 0.9) isFullMessage = true;
+            }
+
+            if (isFullMessage) {
+                const trans = messageDiv.getAttribute('data-translation');
+                if (trans) showTooltip(rect, trans);
+            } else {
+                if (translationCache.has(text)) {
+                    const cached = translationCache.get(text);
+                    translationCache.delete(text); translationCache.set(text, cached);
+                    showTooltip(rect, cached);
+                    return;
+                }
                 
-                const audio = new Audio(audioUrl);
-                audio.onended = () => URL.revokeObjectURL(audioUrl); // Cleanup
-                audio.play().catch(e => console.error("Autoplay blocked:", e));
-
-            } catch (e) {
-                console.error("TTS Error:", e);
-                // Show a non-intrusive popup for TTS errors
-                window.showErrorPopup("TTS Error: " + (e.message || "Unknown Audio Error"));
+                translationController = new AbortController();
+                showTooltip(rect, "Traduction...");
+                
+                APIClient.translate(text, translationController.signal).then(trans => {
+                    if (trans && trans !== CONFIG.ERRORS.TRANSLATION_FAIL) {
+                        if (translationCache.size >= CONFIG.UI.MAX_CACHE_SIZE) translationCache.delete(translationCache.keys().next().value);
+                        translationCache.set(text, trans);
+                    }
+                    if (window.getSelection().toString().trim() === text) showTooltip(rect, trans);
+                }).catch(e => {
+                    if (e.name !== 'AbortError') showTooltip(rect, "Erreur");
+                });
             }
         }
 
-        // Helper UI functions
-        function appendMessage(role, text) {
+        const translationTooltip = document.createElement('div');
+        translationTooltip.id = 'translation-tooltip';
+        document.body.appendChild(translationTooltip);
+
+        function showTooltip(rect, text) {
+            translationTooltip.textContent = text;
+            translationTooltip.classList.add('visible');
+            const h = translationTooltip.offsetHeight;
+            const w = translationTooltip.offsetWidth;
+            let top = rect.top - h - 10;
+            let left = rect.left + (rect.width/2) - (w/2);
+            if (top < 10) top = rect.bottom + 10;
+            if (left < 10) left = 10;
+            if (left + w > window.innerWidth) left = window.innerWidth - w - 10;
+            translationTooltip.style.top = `${top}px`;
+            translationTooltip.style.left = `${left}px`;
+        }
+
+        function hideTooltip() {
+            translationTooltip.classList.remove('visible');
+            setTimeout(() => { if (!translationTooltip.classList.contains('visible')) { translationTooltip.style.top = '-9999px'; } }, 200);
+        }
+
+        // --- DOM MANIPULATION ---
+        function appendMessage(role, text, translation = null, isUser = false, timestamp = null) {
             const div = document.createElement('div');
             div.className = `message ${role}`;
-            let innerContent = text.replace(/\n/g, '<br>');
+            div.setAttribute('aria-live', role === 'bot' ? 'polite' : 'off');
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = SVG_COPY;
+            copyBtn.onclick = (e) => { e.stopPropagation(); copyToClipboard(text); };
+            div.appendChild(copyBtn);
+            div.addEventListener('dblclick', () => copyToClipboard(text));
+
+            let innerContent = `<div class="message-text">${text.replace(/\n/g, '<br>')}</div>`;
             if (role === 'bot') {
-                const positiveWords = ['bravo', 'excellent', 'bien', 'parfait', 'super', 'bon', 'd\'accord', 'ok'];
-                const firstWord = text.trim().split(' ')[0].toLowerCase().replace(/[.,!]/g, '');
-                if (positiveWords.includes(firstWord)) innerContent = `<span class="feedback-icon">✅</span>` + innerContent;
+                 // Check for positive keywords to add sparkle
+                 const posWords = ['bravo', 'excellent', 'bien', 'parfait', 'super', 'bon', 'd\'accord', 'ok'];
+                 const firstWord = text.trim().split(' ')[0].toLowerCase().replace(/[.,!]/g, '');
+                 if (posWords.includes(firstWord)) innerContent = `<span class="feedback-icon">✨</span>` + innerContent;
             }
-            div.innerHTML = innerContent;
+            const contentWrapper = document.createElement('div');
+            contentWrapper.innerHTML = innerContent;
+            div.appendChild(contentWrapper);
+
+            if (translation) div.setAttribute('data-translation', translation);
+
+            // Date Divider
+            const dateObj = timestamp ? new Date(timestamp) : new Date();
+            const dateString = dateObj.toLocaleDateString('fr-FR');
+            if (lastRenderedDateString !== dateString) {
+                const divider = document.createElement('div');
+                divider.className = 'date-divider';
+                const today = new Date().toLocaleDateString('fr-FR');
+                divider.innerText = dateString === today ? 'Aujourd\'hui' : dateString;
+                chatContainer.appendChild(divider);
+                lastRenderedDateString = dateString;
+            }
+
+            const timeDiv = document.createElement('span');
+            timeDiv.className = 'message-timestamp';
+            timeDiv.innerText = dateObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+            div.appendChild(timeDiv);
+
             chatContainer.appendChild(div);
-            scrollToBottom();
+            return div;
         }
 
         function scrollToBottom() {
@@ -1039,7 +1654,6 @@
             div.id = 'loadingIndicator';
             div.innerHTML = `<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
             chatContainer.appendChild(div);
-            scrollToBottom();
         }
 
         function removeLoadingIndicator() {
@@ -1047,29 +1661,49 @@
             if (el) el.remove();
         }
 
-        // Storage
-        function saveSettings() { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); }
-        function loadSettings() {
+        const copyToast = document.getElementById('copy-toast');
+        function showCopyToast() {
+            copyToast.classList.add('visible');
+            setTimeout(() => copyToast.classList.remove('visible'), CONFIG.UI.TOAST_DURATION);
+        }
+
+        async function copyToClipboard(text) {
             try {
-                const saved = localStorage.getItem(STORAGE_KEY);
-                if (saved) settings = { ...settings, ...JSON.parse(saved) };
+                await navigator.clipboard.writeText(text);
+                showCopyToast();
             } catch(e) { console.error(e); }
         }
 
-        // Mic Init
+        // --- MIC HANDLING ---
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
             const recognition = new SpeechRecognition();
             recognition.lang = 'fr-FR';
             recognition.continuous = false;
+            
             recognition.onstart = () => micBtn.classList.add('active');
             recognition.onend = () => micBtn.classList.remove('active');
-            recognition.onresult = (e) => { userInput.value = e.results[0][0].transcript; userInput.focus(); };
-            micBtn.addEventListener('click', () => { try { recognition.start(); } catch(e) { recognition.stop(); } });
+            recognition.onerror = (e) => {
+                micBtn.classList.remove('active');
+                let msg = CONFIG.ERRORS.UNKNOWN;
+                switch(e.error) {
+                    case 'no-speech': msg = CONFIG.ERRORS.MIC_NO_SPEECH; break;
+                    case 'not-allowed': msg = CONFIG.ERRORS.MIC_NOT_ALLOWED; break;
+                    // ... other cases map to German config, you might want to translate CONFIG.ERRORS to French
+                    // I have translated them in the CONFIG object above.
+                }
+                window.showErrorPopup(msg);
+            };
+            recognition.onresult = (e) => {
+                userInput.value = e.results[0][0].transcript;
+                userInput.focus();
+            };
+            micBtn.addEventListener('click', () => {
+                try { recognition.start(); } catch(e) { recognition.stop(); }
+            });
         } else {
             micBtn.style.display = 'none';
         }
-
         init();
     </script>
 </body>
