@@ -1,55 +1,62 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Planète Immo - Agent Virtuel</title>
+    <title>Felix - Berlin Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* iOS EDUCATIONAL THEME (Default/Light) */
-            --bg-color: #F0F4F8;       /* Pale Cool Grey-Blue */
-            --header-bg: rgba(240, 244, 248, 0.9);
-            --text-color: #2C3E50;     /* Dark Slate Grey */
-            --sub-text: #607D8B;
-            
+            /* PREMIUM BERLIN THEME */
+            --bg-color: #Fdfdfd;
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --text-color: #111111;
+            --sub-text: #666666;
+
             /* Bubbles */
             --bot-bubble-bg: #FFFFFF;
-            --bot-text: #2C3E50;
-            --user-bubble-bg: #D6E4FF; /* Pastel Periwinkle */
-            --user-text: #2C3E50;
-            
+            --bot-text: #111111;
+            --user-bubble-bg: #E8F5E9;
+            /* Very subtle green */
+            --user-text: #052e16;
+
             /* UI Elements */
-            --input-area-bg: #FFFFFF;
-            --input-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            --bubble-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            
-            /* Mic Gradient */
-            --mic-grad-start: #2E5C8A;
-            --mic-grad-end: #1A3A5A;
-            
-            /* Drawer */
+            --input-area-bg: rgba(255, 255, 255, 0.9);
+            --input-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            /* Soft diffuse shadow */
+            --bubble-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+            /* Accents */
+            --primary-color: #009688;
+            --accent-grad: linear-gradient(135deg, #009688, #00796B);
+
+            /* Drawer & Borders */
             --drawer-bg: #FFFFFF;
-            --border-color: #E1E8ED;
+            --border-color: #F0F0F0;
         }
 
-        /* DARK MODE */
+        /* DARK MODE - Premium Dark */
         [data-theme="dark"] {
-            --bg-color: #1a2634;
-            --header-bg: rgba(26, 38, 52, 0.9);
-            --text-color: #ECF0F1;
-            --sub-text: #BDC3C7;
-            
-            --bot-bubble-bg: #2C3E50;
-            --bot-text: #ECF0F1;
-            --user-bubble-bg: #34495E;
-            --user-text: #ECF0F1;
-            
-            --input-area-bg: #2C3E50;
-            --input-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            --bubble-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            
-            --drawer-bg: #2C3E50;
-            --border-color: #34495E;
+            --bg-color: #0F1115;
+            /* Deep rich dark */
+            --header-bg: rgba(15, 17, 21, 0.85);
+            --text-color: #EEEEEE;
+            --sub-text: #888888;
+
+            --bot-bubble-bg: #1E2129;
+            --bot-text: #EEEEEE;
+            --user-bubble-bg: #004D40;
+            --user-text: #E0F2F1;
+
+            --input-area-bg: rgba(30, 33, 41, 0.9);
+            --input-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --bubble-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+            --drawer-bg: #1E2129;
+            --border-color: #2A2E38;
         }
 
         * {
@@ -60,7 +67,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
@@ -72,79 +79,14 @@
             max-width: 100%;
         }
 
-        /* --- LOGIN SCREEN --- */
-        #login-screen {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg-color);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .login-card {
-            background: var(--drawer-bg);
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            max-width: 400px;
-            width: 100%;
-            border: 1px solid var(--border-color);
-        }
-
-        .login-title {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 10px;
-            color: var(--text-color);
-        }
-
-        .login-subtitle {
-            color: var(--sub-text);
-            margin-bottom: 30px;
-            font-size: 0.95rem;
-        }
-
-        .google-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #FFFFFF;
-            color: #1F2937;
-            font-weight: 600;
-            padding: 12px 24px;
-            border-radius: 12px;
-            border: 1px solid #E5E7EB;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
-            transition: all 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .google-btn:hover {
-            background: #F9FAFB;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-            transform: translateY(-1px);
-        }
-
-        .google-btn svg {
-            width: 20px;
-            height: 20px;
-            margin-right: 12px;
-        }
-
         /* --- OFFLINE BANNER --- */
         #offline-banner {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background-color: #D32F2F; /* Red warning */
+            background-color: #D32F2F;
+            /* Red warning */
             color: white;
             text-align: center;
             padding: 8px;
@@ -153,10 +95,11 @@
             z-index: 2000;
             transform: translateY(-100%);
             visibility: hidden;
+            /* Hidden by default */
             transition: transform 0.3s ease, visibility 0.3s ease;
             cursor: pointer;
         }
-        
+
         #offline-banner.visible {
             transform: translateY(0);
             visibility: visible;
@@ -181,7 +124,7 @@
             font-size: 1.3rem;
             letter-spacing: -0.5px;
             color: var(--text-color);
-            margin-left: 0; 
+            margin-left: 0;
         }
 
         .header-controls {
@@ -204,18 +147,19 @@
         }
 
         .icon-btn:hover {
-            background: rgba(0,0,0,0.05);
+            background: rgba(0, 0, 0, 0.05);
             color: var(--text-color);
         }
 
         .icon-btn.active-sound {
             color: var(--mic-grad-start);
-            background: rgba(46, 92, 138, 0.1);
+            background: rgba(0, 150, 136, 0.1);
         }
 
         /* --- APP CONTENT WRAPPER --- */
         #app-content {
-            display: none; /* Hidden by default until login */
+            display: flex;
+            /* Visible by default (No Login) */
             flex-direction: column;
             height: 100%;
             width: 100%;
@@ -223,9 +167,9 @@
 
         /* --- INSTRUCTION BOX --- */
         .instruction-box {
-            background-color: #E3F2FD;
-            border-left: 4px solid #2E5C8A;
-            color: #2C3E50;
+            background-color: #E0F2F1;
+            border-left: 4px solid #009688;
+            color: #004D40;
             padding: 1rem;
             margin: 1rem 1.5rem 0 1.5rem;
             border-radius: 8px;
@@ -233,18 +177,19 @@
             line-height: 1.4;
             box-shadow: var(--bubble-shadow);
         }
-        
+
         [data-theme="dark"] .instruction-box {
-            background-color: #2C3E50;
-            border-left: 4px solid #607D8B;
-            color: #ECF0F1;
+            background-color: #004D40;
+            border-left: 4px solid #80CBC4;
+            color: #E0F2F1;
         }
 
         .instruction-label {
             font-weight: bold;
             text-transform: uppercase;
             font-size: 0.75rem;
-            color: var(--sub-text);
+            color: inherit;
+            opacity: 0.8;
             margin-bottom: 4px;
             display: block;
         }
@@ -257,8 +202,9 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+            /* Airy spacing */
             scroll-behavior: smooth;
-            padding-bottom: 140px; 
+            padding-bottom: 140px;
             position: relative;
             z-index: 10;
             width: 100%;
@@ -294,8 +240,9 @@
             margin-top: 4px;
             align-self: flex-end;
             user-select: none;
+            /* Don't select timestamp when copying text */
         }
-        
+
         /* Date Divider */
         .date-divider {
             text-align: center;
@@ -312,8 +259,9 @@
             background-color: var(--bot-bubble-bg);
             color: var(--bot-text);
             border-radius: 20px 20px 20px 4px;
-            margin-left: 10px; 
-            margin-top: 10px; 
+            /* Pill shape with tail spot */
+            margin-left: 10px;
+            margin-top: 10px;
         }
 
         /* Bot Tail */
@@ -329,6 +277,7 @@
             z-index: -1;
             box-shadow: var(--bubble-shadow);
         }
+
         .message.bot::after {
             content: "";
             position: absolute;
@@ -336,7 +285,8 @@
             left: -10px;
             width: 10px;
             height: 20px;
-            background-color: var(--bg-color); /* Masking */
+            background-color: var(--bg-color);
+            /* Masking */
             border-bottom-right-radius: 10px;
             z-index: 0;
         }
@@ -363,6 +313,7 @@
             z-index: -1;
             box-shadow: var(--bubble-shadow);
         }
+
         .message.user::after {
             content: "";
             position: absolute;
@@ -370,7 +321,8 @@
             right: -10px;
             width: 10px;
             height: 20px;
-            background-color: var(--bg-color); /* Masking */
+            background-color: var(--bg-color);
+            /* Masking */
             border-bottom-left-radius: 10px;
             z-index: 0;
         }
@@ -379,7 +331,8 @@
         .feedback-icon {
             display: inline-block;
             margin-right: 6px;
-            color: #2ECC71; /* Green */
+            color: #009688;
+            /* Teal */
             font-size: 1.1em;
         }
 
@@ -401,7 +354,7 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s, transform 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .copy-btn:hover {
@@ -428,7 +381,7 @@
             width: fit-content;
             position: relative;
         }
-        
+
         .typing-indicator::before {
             content: "";
             position: absolute;
@@ -450,12 +403,25 @@
             animation: bounce 1.4s infinite ease-in-out both;
         }
 
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        .typing-dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
 
         @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
         }
 
         /* --- TRANSLATION TOOLTIP --- */
@@ -468,13 +434,15 @@
             font-size: 14px;
             z-index: 1000;
             pointer-events: none;
+            /* Allows selection to continue comfortably */
             opacity: 0;
             transition: opacity 0.2s ease, transform 0.2s ease;
             max-width: 300px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(4px);
             text-align: center;
             line-height: 1.4;
+            /* Initially hidden off-screen */
             top: -9999px;
             left: -9999px;
         }
@@ -488,6 +456,7 @@
         .toast-notification {
             position: fixed;
             bottom: 120px;
+            /* Above footer area */
             left: 50%;
             transform: translateX(-50%);
             padding: 10px 20px;
@@ -498,25 +467,25 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             pointer-events: none;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
+
         .toast-notification.visible {
             opacity: 1;
             visibility: visible;
         }
 
-        /* Retry Toast */
+        /* Retry Toast Specific */
         #retry-toast {
             background: rgba(255, 152, 0, 0.95);
             color: white;
         }
 
-        /* Copy Toast */
+        /* Copy Toast Specific */
         #copy-toast {
             background: rgba(76, 175, 80, 0.95);
             color: white;
@@ -525,38 +494,52 @@
         /* --- FOOTER (Floating) --- */
         footer {
             padding: 0 1.5rem 1.5rem 1.5rem;
-            padding-left: 115px; 
+            /* Padding left reset since avatar is moved */
+            padding-left: 1.5rem;
             background: transparent;
             flex-shrink: 0;
-            position: absolute;
+            position: fixed;
+            /* Fixed to stay at bottom */
             bottom: 0;
             left: 0;
             right: 0;
-            width: auto;
             z-index: 20;
             pointer-events: none;
+            display: flex;
+            justify-content: center;
         }
 
         .input-group {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             max-width: 800px;
             width: 100%;
-            margin: 0 auto;
             align-items: flex-end;
+            /* Align bottom */
             pointer-events: auto;
+            position: relative;
         }
 
+        /* Text Input Container */
         .text-input-container {
             flex-grow: 1;
             background: var(--input-area-bg);
-            border-radius: 25px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            /* Safari */
+            border-radius: 24px;
             box-shadow: var(--input-shadow);
-            padding: 5px;
+            border: 1px solid var(--border-color);
+            padding: 6px;
             display: flex;
             align-items: center;
             min-width: 0;
-            padding-right: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .text-input-container:focus-within {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
         }
 
         textarea {
@@ -564,13 +547,14 @@
             background: transparent;
             border: none;
             color: var(--text-color);
-            padding: 12px 15px;
+            padding: 14px 16px;
             font-family: inherit;
             font-size: 1rem;
             outline: none;
             resize: none;
-            height: 50px; 
+            height: 52px;
             line-height: 1.5;
+            max-height: 120px;
         }
 
         #char-count {
@@ -581,23 +565,27 @@
             min-width: 50px;
             text-align: right;
             transition: color 0.3s;
+            pointer-events: none;
+            /* Make non-interactive so clicks go to textarea */
+            user-select: none;
         }
 
+        /* Send Button */
         #sendBtn {
-            background: transparent;
-            color: var(--mic-grad-start);
+            background: var(--accent-grad);
+            color: white;
             border: none;
-            font-weight: bold;
+            font-weight: 600;
             font-size: 0.9rem;
-            padding: 0 15px;
+            padding: 0 20px;
+            border-radius: 18px;
             cursor: pointer;
-            height: 50px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            height: 40px;
+            margin-right: 4px;
+            /* Space from edge */
+            white-space: nowrap;
+            transition: filter 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         #sendBtn:disabled {
@@ -610,6 +598,7 @@
             width: 18px;
             height: 18px;
             border: 2px solid currentColor;
+            /* Use text color */
             border-bottom-color: transparent;
             border-radius: 50%;
             display: inline-block;
@@ -618,23 +607,30 @@
         }
 
         @keyframes rotation {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
+        /* Large Mic Button */
         #micBtn {
-            width: 56px;
-            height: 56px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--mic-grad-start), var(--mic-grad-end));
-            border: none;
-            color: white;
+            background: var(--input-area-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            color: var(--sub-text);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(46, 92, 138, 0.4);
-            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+            box-shadow: var(--input-shadow);
+            transition: all 0.2s;
             flex-shrink: 0;
         }
 
@@ -648,7 +644,8 @@
 
         #micBtn:disabled {
             cursor: not-allowed;
-            opacity: 0.5; 
+            /* Opacity handled in JS or CSS here, adding standard disabled styling */
+            opacity: 0.5;
             box-shadow: none;
         }
 
@@ -667,27 +664,28 @@
 
         /* --- FLOATING AVATAR --- */
         @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
         }
 
-        .floating-avatar {
-            position: fixed;
-            bottom: 15px;
-            left: 15px;
-            width: 85px;
-            height: 85px;
-            border-radius: 50%;
-            background: white;
-            box-shadow: 0 8px 20px rgba(44, 62, 80, 0.15);
-            z-index: 25; 
-            animation: float 4s ease-in-out infinite;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 4px solid #fff;
-            overflow: hidden; 
+        /* Avatars in Header are styled inline/via utility classes for now or we repurpose this */
+        .header-left .floating-avatar {
+            /* Resetting fixed position properties */
+            position: relative;
+            bottom: auto;
+            left: auto;
+            box-shadow: none;
+            animation: none;
+            border: 2px solid white;
         }
 
         .floating-avatar img {
@@ -698,55 +696,148 @@
 
         /* --- MOBILE OPTIMIZATIONS --- */
         @media (max-width: 600px) {
+
+            /* Reset conflicting mobile floating avatar styles */
             .floating-avatar {
-                width: 50px;
-                height: 50px;
-                bottom: 10px;
-                left: 10px;
-                border-width: 2px;
+                width: auto !important;
+                height: auto !important;
+                bottom: auto !important;
+                left: auto !important;
+                border-width: 2px !important;
+                position: relative !important;
             }
+
+            /* Target the specific one in header to ensure it's circular */
+            .header-left .floating-avatar {
+                width: 40px !important;
+                height: 40px !important;
+                min-width: 40px !important;
+                /* Prevents squashing to oval */
+                border-radius: 50% !important;
+            }
+
             footer {
-                padding-left: 70px;
+                padding-left: 15px;
+                /* Reset padding for mobile */
                 padding-right: 15px;
-                padding-bottom: 10px; 
-                padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
+                padding-bottom: 10px;
+                padding-bottom: calc(10px + env(safe-area-inset-bottom));
             }
-            .input-group { gap: 8px; }
-            #micBtn { width: 45px; height: 45px; }
-            #micBtn svg { width: 22px; height: 22px; }
-            .text-input-container { min-height: 45px; }
-            textarea { height: 45px; padding: 10px 12px; font-size: 16px; }
-            #sendBtn { height: 45px; padding: 0 10px; }
-            #chat-container { padding: 1rem; padding-bottom: 120px; }
-            .message { max-width: 88%; }
-            .toast-notification { bottom: 100px; }
-            .shortcuts-hint { display: none; }
+
+            .input-group {
+                gap: 8px;
+                max-width: 100%;
+            }
+
+            #micBtn {
+                width: 44px;
+                height: 44px;
+            }
+
+            #micBtn svg {
+                width: 22px;
+                height: 22px;
+            }
+
+            .text-input-container {
+                min-height: 44px;
+                padding: 2px 8px;
+            }
+
+            textarea {
+                height: 44px;
+                padding: 10px 10px;
+                font-size: 16px;
+            }
+
+            /* Hide char count on mobile to save space if needed, or make very small */
+            #char-count {
+                font-size: 0.65rem;
+                min-width: auto;
+                margin: 0 4px;
+            }
+
+            #sendBtn {
+                height: 44px;
+                padding: 0 12px;
+                font-size: 0.8rem;
+            }
+
+            #chat-container {
+                padding: 1rem;
+                padding-bottom: 120px;
+            }
+
+            .message {
+                max-width: 88%;
+            }
+
+            .toast-notification {
+                bottom: 100px;
+            }
+
+            .shortcuts-hint {
+                display: none;
+            }
+
+            /* Hide on mobile */
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(46, 92, 138, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(46, 92, 138, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(46, 92, 138, 0); }
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 150, 136, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 150, 136, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 150, 136, 0);
+            }
         }
 
-        svg { width: 24px; height: 24px; fill: currentColor; }
-        #micBtn svg { width: 28px; height: 28px; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+        /* SVG Sizing */
+        svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        #micBtn svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
 
         /* --- ERROR POPUP STYLES --- */
         .error-overlay {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(4px);
             z-index: 100;
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
-            visibility: hidden; 
+            visibility: hidden;
             pointer-events: none;
             transition: opacity 0.3s ease, visibility 0.3s ease;
         }
@@ -763,7 +854,7 @@
             max-width: 320px;
             padding: 20px;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
             text-align: center;
             transform: scale(0.9);
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -812,29 +903,18 @@
             background: #B71C1C;
         }
 
+        /* Delete Button in Header */
+        #deleteBtn {
+            color: #D32F2F;
+        }
+
+        #deleteBtn:hover {
+            background: rgba(211, 47, 47, 0.1);
+        }
     </style>
 </head>
-<body>
 
-    <!-- LOGIN SCREEN -->
-    <div id="login-screen">
-        <div class="login-card">
-            <div class="login-title">Planète Immo 🏠</div>
-            <div class="login-subtitle">Entraînement au français oral - B1/B2</div>
-            
-            <button class="google-btn" id="loginBtn">
-                <svg viewBox="0 0 24 24">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.26.81-.58z" fill="#FBBC05"></path>
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
-                </svg>
-                Connexion avec Google
-            </button>
-            
-            <div id="loginError" style="color: #E74C3C; margin-top: 20px; font-size: 0.9rem; display: none;"></div>
-        </div>
-    </div>
+<body>
 
     <!-- OFFLINE BANNER -->
     <div id="offline-banner">⚠️ Pas de connexion Internet</div>
@@ -842,68 +922,92 @@
     <!-- MAIN CONTENT -->
     <div id="app-content">
         <header>
-            <div class="header-title">Planète Immo</div>
-            
+            <div class="header-left" style="display: flex; align-items: center; gap: 12px; flex-grow: 1;">
+                <div class="floating-avatar video-avatar"
+                    style="position: relative; top: 0; left: 0; width: 42px; height: 42px; bottom: auto; box-shadow: none; border: 2px solid white; animation: none; border-radius: 50%; overflow: hidden;">
+                    <img src="https://randomuser.me/api/portraits/men/52.jpg" alt="Felix"
+                        style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="header-title">François - Guide de Paris</div>
+            </div>
+
             <div class="header-controls">
                 <!-- Theme Toggle -->
-                <button class="icon-btn" id="themeToggle" title="Thème" aria-label="Changer de thème">
-                    <svg id="themeIcon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+                <button class="icon-btn" id="themeToggle" title="Design" aria-label="Design wechseln">
+                    <svg id="themeIcon" viewBox="0 0 24 24">
+                        <path
+                            d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z" />
+                    </svg>
                 </button>
-    
+
                 <!-- Sound Toggle -->
-                <button class="icon-btn" id="speakerToggle" title="Son" aria-label="Activer/Désactiver le son">
-                    <svg id="speakerIcon" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                <button class="icon-btn" id="speakerToggle" title="Ton" aria-label="Ton umschalten">
+                    <svg id="speakerIcon" viewBox="0 0 24 24">
+                        <path
+                            d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
+                    </svg>
                 </button>
-                
-                <!-- Logout (Small X) -->
-                <button class="icon-btn" id="logoutBtn" title="Déconnexion" aria-label="Se déconnecter">
-                    <svg viewBox="0 0 24 24"><path d="M9 21h6v-2H9v2zm3-19C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm2-8h4l-5-5-5 5h4v4h2v-4z"/></svg>
+
+                <!-- Clear History Button -->
+                <button class="icon-btn" id="deleteBtn" title="Chat löschen" aria-label="Chatverlauf löschen"
+                    onclick="clearHistory()">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                    </svg>
                 </button>
             </div>
         </header>
 
-        <!-- STUDENT INSTRUCTION BOX -->
+        <!-- INSTRUCTION BOX -->
         <div class="instruction-box">
-            <span class="instruction-label">Consigne pour l'étudiant :</span>
-            Vous souhaitez visiter un appartement et avoir plus de renseignements après avoir lu une annonce sur internet. Vous appelez l’agence immobilière.
+            <span class="instruction-label">Situation :</span>
+            Tu viens d'arriver à Paris. Ton ami François (24 ans) t'accueille à la Gare du Nord. Vous planifiez votre
+            week-end. Parle français avec lui !
         </div>
-    
-        <!-- FLOATING AVATAR -->
-        <div class="floating-avatar">
-            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Agent Immobilier">
-        </div>
-    
+
+        <!-- FLOATING AVATAR REMOVED -->
+
         <!-- CHAT CONTAINER -->
         <div id="chat-container" role="log">
-            <!-- Messages injected here -->
+            <!-- Default message populated by JS if history empty -->
         </div>
-    
+
         <!-- FOOTER -->
         <footer>
             <div class="input-group">
                 <div class="text-input-container">
-                    <textarea id="userInput" placeholder="Répondre..." onkeydown="handleEnter(event)"></textarea>
+                    <textarea id="userInput" placeholder="Répondez..."></textarea>
                     <span id="char-count">0/1000</span>
                     <button id="sendBtn" onclick="sendMessage()">Envoyer</button>
                 </div>
-                <button id="micBtn" title="Parler" aria-label="Microphone">
-                    <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+                <button id="micBtn" title="Parler" aria-label="Entrée vocale">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                        <path
+                            d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                    </svg>
                 </button>
             </div>
             <!-- KEYBOARD SHORTCUTS HINT -->
-            <div class="shortcuts-hint">⌘K pour écrire • Esc pour effacer • ⌘Enter pour envoyer</div>
+            <div class="shortcuts-hint">⌘K to focus • Esc to clear • ⌘Enter to send</div>
         </footer>
     </div>
 
     <!-- RETRY TOAST -->
     <div id="retry-toast" class="toast-notification">
-        <svg style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" fill="currentColor"/></svg>
+        <svg style="width:20px;height:20px;" viewBox="0 0 24 24">
+            <path
+                d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"
+                fill="currentColor" />
+        </svg>
         <span id="retry-text">Problème de connexion... nouvelle tentative (1/3)</span>
     </div>
 
     <!-- COPY TOAST -->
     <div id="copy-toast" class="toast-notification">
-        <svg style="width:20px;height:20px;" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" fill="currentColor"/></svg>
+        <svg style="width:20px;height:20px;" viewBox="0 0 24 24">
+            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" fill="currentColor" />
+        </svg>
         <span>Copié !</span>
     </div>
 
@@ -911,18 +1015,14 @@
     <div id="errorOverlay" class="error-overlay">
         <div class="error-popup">
             <span class="error-icon">⚠️</span>
-            <div class="error-title">Erreur API</div>
+            <div class="error-title">Erreur</div>
             <div id="errorMessage" class="error-message">Une erreur est survenue.</div>
             <button class="error-btn" onclick="closeErrorPopup()">OK</button>
         </div>
     </div>
 
-    <!-- FIREBASE AND APP LOGIC -->
-    <script type="module">
-        // Import Firebase SDK (Modern Modular Syntax)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
+    <!-- APP LOGIC (NO LOGIN) -->
+    <script>
         // --- CONFIGURATION ---
         const CONFIG = {
             API: {
@@ -931,7 +1031,7 @@
                 RETRY_BASE_DELAY: 1000 // ms
             },
             CHAT: {
-                STORAGE_KEY: 'planete_immo_history',
+                STORAGE_KEY: 'felix_chat_history',
                 MAX_HISTORY_LENGTH: 40, // 20 exchanges
                 MAX_CHARS: 1000,
                 SCROLL_THRESHOLD: 150 // px
@@ -941,14 +1041,15 @@
                 MAX_CACHE_SIZE: 100, // translation cache entries
                 TOAST_DURATION: 2000 // ms
             },
+            // --- NEW: ERROR MESSAGE MAPPING ---
             ERRORS: {
                 NETWORK: "Pas de connexion Internet. Veuillez vérifier votre réseau.",
                 API_GENERIC: "Erreur serveur. Veuillez réessayer plus tard.",
-                API_AUTH: "Erreur d'authentification. Veuillez recharger la page.",
-                API_RATE_LIMIT: "Trop de requêtes. Veuillez patienter.",
-                INPUT_TOO_LONG: "Message trop long ! Limité à {0} caractères.",
-                MIC_NO_SPEECH: "Aucune parole détectée. Parlez plus fort.",
-                MIC_NOT_ALLOWED: "Accès micro refusé. Vérifiez les paramètres du navigateur.",
+                API_AUTH: "Erreur d'authentification. Veuillez rafraîchir la page.",
+                API_RATE_LIMIT: "Trop de requêtes. Veuillez patienter un instant.",
+                INPUT_TOO_LONG: "Message trop long ! Veuillez le raccourcir à {0} caractères.",
+                MIC_NO_SPEECH: "Rien entendu. Parlez plus fort svp.",
+                MIC_NOT_ALLOWED: "Accès au micro refusé. Veuillez l'autoriser dans les paramètres.",
                 MIC_NO_DEVICE: "Aucun microphone trouvé.",
                 AUDIO_PLAYBACK: "Impossible de lire l'audio.",
                 TRANSLATION_FAIL: "Échec de la traduction.",
@@ -956,91 +1057,230 @@
             }
         };
 
-        // --- ACCESS CONTROL LIST ---
-        const ALLOWED_EMAILS = [
-            "adarshkadam39@gmail.com",
-            "basile@pretaparler.ch",
-            "basilejupy6@gmail.com",
-            "isabelle@pretaparler.ch"
-        ];
+        // --- UTILITIES ---
 
-        // --- FIREBASE CONFIGURATION ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyBgXK0rmDGRYEmFsswkCE5TRDbKkCeheAQ",
-            authDomain: "basileschatbot.firebaseapp.com",
-            projectId: "basileschatbot",
-            storageBucket: "basileschatbot.firebasestorage.app",
-            messagingSenderId: "343337194190",
-            appId: "1:343337194190:web:b5ec38406a4172ae74f69f",
-            measurementId: "G-F6Y0XRYJ7B"
+        // Storage Manager
+        const StorageManager = {
+            getSettings() {
+                try {
+                    const saved = localStorage.getItem(CONFIG.CHAT.STORAGE_KEY + '_settings');
+                    return saved ? JSON.parse(saved) : null;
+                } catch (e) {
+                    console.error("Storage Error:", e);
+                    return null;
+                }
+            },
+            saveSettings(settings) {
+                localStorage.setItem(CONFIG.CHAT.STORAGE_KEY + '_settings', JSON.stringify(settings));
+            },
+            getHistory() {
+                try {
+                    const saved = localStorage.getItem(CONFIG.CHAT.STORAGE_KEY);
+                    return saved ? JSON.parse(saved) : null;
+                } catch (e) {
+                    console.error("Storage Error:", e);
+                    return null;
+                }
+            },
+            saveHistory(history) {
+                localStorage.setItem(CONFIG.CHAT.STORAGE_KEY, JSON.stringify(history));
+            },
+            clearAll() {
+                localStorage.removeItem(CONFIG.CHAT.STORAGE_KEY);
+            }
         };
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+        // API Client
+        const APIClient = {
+            async fetchWithRetry(url, options, maxRetries = CONFIG.API.RETRY_COUNT, signal = null) {
+                let attempt = 0;
+                while (attempt <= maxRetries) {
+                    try {
+                        if (signal && signal.aborted) throw new DOMException("Aborted", "AbortError");
+                        const fetchOptions = { ...options };
+                        if (signal) fetchOptions.signal = signal;
 
-        // --- UI ELEMENTS FOR LOGIN ---
-        const loginScreen = document.getElementById('login-screen');
-        const appContent = document.getElementById('app-content');
-        const loginBtn = document.getElementById('loginBtn');
-        const loginError = document.getElementById('loginError');
-        const logoutBtn = document.getElementById('logoutBtn');
+                        const response = await fetch(url, fetchOptions);
 
-        // --- AUTH LOGIC ---
-        loginBtn.addEventListener('click', () => {
-            signInWithPopup(auth, provider)
-                .then((result) => {
-                    console.log("Connexion réussie", result.user.email);
-                })
-                .catch((error) => {
-                    console.error("Erreur Connexion:", error);
-                    let msg = "Échec connexion: " + error.message;
-                    
-                    if (error.code === 'auth/unauthorized-domain') {
-                        const domain = window.location.hostname;
-                        msg = `⚠️ <strong>Domaine non autorisé</strong><br><br>
-                        1. Allez dans Firebase Console > Authentication > Settings > Authorized Domains.<br>
-                        2. Ajoutez <code>${domain}</code> à la liste.`;
-                    } else if (error.code === 'auth/popup-closed-by-user') {
-                        msg = "Connexion annulée.";
+                        if (response.ok) {
+                            hideRetryToast();
+                            return response;
+                        }
+
+                        // Map HTTP Errors to German Config
+                        if (response.status === 401 || response.status === 403) throw new Error(CONFIG.ERRORS.API_AUTH);
+                        if (response.status === 429) throw new Error(CONFIG.ERRORS.API_RATE_LIMIT);
+                        if (response.status >= 500) throw new Error(CONFIG.ERRORS.API_GENERIC);
+
+                        throw new Error(`Server Error ${response.status}`);
+
+                    } catch (err) {
+                        if (err.name === 'AbortError' || err.message === CONFIG.ERRORS.API_AUTH) throw err; // Don't retry auth errors
+
+                        attempt++;
+                        if (attempt > maxRetries) throw err;
+
+                        showRetryToast(attempt, maxRetries);
+                        const delay = Math.pow(2, attempt - 1) * CONFIG.API.RETRY_BASE_DELAY;
+
+                        await new Promise((resolve, reject) => {
+                            const timeout = setTimeout(resolve, delay);
+                            if (signal) {
+                                signal.addEventListener('abort', () => {
+                                    clearTimeout(timeout);
+                                    reject(new DOMException("Aborted", "AbortError"));
+                                });
+                            }
+                        });
                     }
-
-                    loginError.innerHTML = msg;
-                    loginError.style.display = 'block';
-                });
-        });
-
-        logoutBtn.addEventListener('click', () => {
-            signOut(auth);
-            // Clear local session data on logout if desired
-            // StorageManager.clearAll(); 
-        });
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                if (ALLOWED_EMAILS.includes(user.email)) {
-                    loginScreen.style.display = 'none';
-                    appContent.style.display = 'flex';
-                    init(); // Initialize Chat App logic
-                } else {
-                    console.warn("Accès refusé pour", user.email);
-                    loginError.textContent = "Accès refusé : " + user.email + " n'est pas autorisé.";
-                    loginError.style.display = 'block';
-                    signOut(auth);
                 }
-            } else {
-                loginScreen.style.display = 'flex';
-                appContent.style.display = 'none';
+            },
+
+            async chat(messages) {
+                try {
+                    const response = await this.fetchWithRetry(CONFIG.API.WORKER_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ messages: messages })
+                    });
+
+                    const data = await response.json();
+                    return data.choices?.[0]?.message?.content || "(*Fehler*)";
+                } catch (e) {
+                    throw e; // Pass up for UI handling
+                }
+            },
+
+            async translate(text, signal) {
+                const translationPrompt = "Translate the following text to English. Output ONLY the English translation.";
+                const messages = [
+                    { role: 'system', content: translationPrompt },
+                    { role: 'user', content: text }
+                ];
+
+                const response = await this.fetchWithRetry(CONFIG.API.WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: messages })
+                }, 3, signal);
+
+                const data = await response.json();
+                return data.choices?.[0]?.message?.content || CONFIG.ERRORS.TRANSLATION_FAIL;
+            },
+
+            async tts(text) {
+                const response = await this.fetchWithRetry(CONFIG.API.WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'tts', text: text })
+                });
+                return await response.blob();
             }
-        });
+        };
 
+        // Audio Manager
+        const AudioManager = {
+            currentAudio: null,
 
-        // --- CHAT APP LOGIC ---
-        
+            async playBlob(blob) {
+                this.stop();
+
+                const audioUrl = URL.createObjectURL(blob);
+                this.currentAudio = new Audio(audioUrl);
+
+                const cleanup = () => {
+                    URL.revokeObjectURL(audioUrl);
+                    if (this.currentAudio && this.currentAudio.src === audioUrl) {
+                        this.currentAudio = null;
+                    }
+                };
+
+                this.currentAudio.onended = cleanup;
+                this.currentAudio.onerror = () => {
+                    console.error("Audio playback error");
+                    // window.showErrorPopup(CONFIG.ERRORS.AUDIO_PLAYBACK); // Optional: might be annoying if transient
+                    cleanup();
+                };
+
+                try {
+                    await this.currentAudio.play();
+                } catch (e) {
+                    console.error("Autoplay blocked:", e);
+                    cleanup();
+                }
+            },
+
+            stop() {
+                if (this.currentAudio) {
+                    this.currentAudio.pause();
+                    this.currentAudio = null;
+                }
+            }
+        };
+
+        // --- FELIX SYSTEM PROMPT ---
+        // --- FRANÇOIS SYSTEM PROMPT ---
+        const systemInstruction = `
+        ### IDENTITY & PERSONA
+        You are "François", a 24-year-old university student living in Paris. You are friendly, patient, and enthusiastic. You are meeting the user (a friend) who has just arrived in Paris for a weekend trip.
+
+        ### CORE OBJECTIVE
+        Your goal is to plan the upcoming weekend with the user. You must strictly guide the conversation through specific stages (Arrival -> Accommodation -> Activities -> Food -> Transport). You are the "Conversation Driver."
+
+        ### CRITICAL RULES (NON-NEGOTIABLE)
+        1.  **FRENCH ONLY:** You must NEVER speak English. Even if the user uses English, reply in simple French.
+        2.  **ALWAYS END WITH A QUESTION:** Every single response must end with a question or a choice (Option A vs. Option B). This prevents the conversation from dying.
+        3.  **CEFR LEVEL CONTROL:** Speak in clear, standard "Français" at an A2/B1 level. Avoid slang (verlan), strong dialects, or overly complex academic sentence structures. Use high-frequency vocabulary.
+        4.  **IMPLICIT CORRECTION:** Do not act like a robot teacher. If the user makes a grammar mistake, repeat their sentence back to them correctly in your reply (Recasting).
+            * *User:* "Je avoir faim pour pizza."
+            * *You:* "Ah, tu as faim *de* pizza ? Super ! Allons à ma pizzeria préférée."
+        5.  **SHORT TURNS:** Keep your responses under 40 words. Long blocks of text overwhelm learners.
+        6. **OUTPUT FORMAT:** Every single response must be strictly in this format:
+           [French Text] ||| [English Translation]
+           Example: "Bonjour, comment vas-tu ? ||| Hello, how are you?"
+
+        ### CONVERSATION STAGES (THEME: WEEKEND IN PARIS)
+        You must move the user through these stages linearly. Do not skip steps.
+
+        **STAGE 1: ARRIVAL & MOOD**
+        * Context: You are at Gare du Nord (Train Station).
+        * Goal: Greet them warmly and ask how the journey was or if they are tired.
+        * *Mandatory Ending:* Ask if they want to go to the hotel first or get coffee immediately.
+
+        **STAGE 2: ACCOMMODATION**
+        * Context: Deciding on the luggage.
+        * Goal: Discuss the hotel/hostel.
+        * *Mandatory Ending:* Ask if they prefer to take the Métro or a Taxi/Uber to the hotel.
+
+        **STAGE 3: ACTIVITY PLANNING (SATURDAY)**
+        * Context: Luggage is dropped off. Now planning the afternoon.
+        * Goal: Propose two distinct options.
+            * Option A: Culture (Musée du Louvre / Tour Eiffel).
+            * Option B: Nature/Relaxation (Jardin du Luxembourg / Bateau-mouche).
+        * *Mandatory Ending:* "Tu préfères [Option A] ou [Option B] ?"
+
+        **STAGE 4: DINNER**
+        * Context: Getting hungry.
+        * Goal: Decide on cuisine.
+        * *Mandatory Ending:* Ask if they want traditional French food (Steak-Frites/Crêpes) or something international.
+
+        ### ERROR HANDLING PROTOCOLS
+        * **If the user says simply "Yes" or "No" (Low Effort):** You must enthusiastically accept their answer and immediately pivot to the next detail.
+            * *User:* "Oui."
+            * *You:* "Parfait ! On fait comme ça. Et dis-moi, tu as ton appareil photo ?"
+        * **If the user speaks English:** Ignore the English, guess their intent, and reply in French.
+            * *User:* "I want to eat."
+            * *You:* "D'accord ! Tu veux manger. J'ai très faim aussi. On mange une crêpe ?"
+        * **If the user says nothing (Empty Input):** Prompt them: "Tu es toujours là ? Je t'attends à la gare !"
+
+        ### TONE & FORMATTING
+        * Use emojis sparingly to convey context (e.g., 🚆 for train, 🥐 for food) – this helps the user understand without translation.
+        * Be energetic. Use exclamations ("Super !", "Génial !", "Pas de souci !").
+        `;
+
         // STATE VARIABLES
         let chatHistory = [];
-        let audioEnabled = false; 
+        let audioEnabled = false;
         let settings = { theme: 'light', audioEnabled: false };
         let lastRenderedDateString = null;
         let translationController = null;
@@ -1073,212 +1313,33 @@
         const SVG_SOUND = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
         const SVG_COPY = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
 
-        // --- UTILITIES ---
-        const StorageManager = {
-            getSettings() {
-                try {
-                    const saved = localStorage.getItem(CONFIG.CHAT.STORAGE_KEY + '_settings');
-                    return saved ? JSON.parse(saved) : null;
-                } catch(e) { return null; }
-            },
-            saveSettings(s) {
-                localStorage.setItem(CONFIG.CHAT.STORAGE_KEY + '_settings', JSON.stringify(s));
-            },
-            getHistory() {
-                try {
-                    const saved = localStorage.getItem(CONFIG.CHAT.STORAGE_KEY);
-                    return saved ? JSON.parse(saved) : null;
-                } catch(e) { return null; }
-            },
-            saveHistory(h) {
-                localStorage.setItem(CONFIG.CHAT.STORAGE_KEY, JSON.stringify(h));
-            },
-            clearAll() {
-                localStorage.removeItem(CONFIG.CHAT.STORAGE_KEY);
-            }
-        };
 
-        const APIClient = {
-            async fetchWithRetry(url, options, maxRetries = CONFIG.API.RETRY_COUNT, signal = null) {
-                let attempt = 0;
-                while (attempt <= maxRetries) {
-                    try {
-                        if (signal && signal.aborted) throw new DOMException("Aborted", "AbortError");
-                        const fetchOptions = { ...options };
-                        if (signal) fetchOptions.signal = signal;
-
-                        const response = await fetch(url, fetchOptions);
-                        if (response.ok) {
-                            hideRetryToast();
-                            return response;
-                        }
-
-                        if (response.status === 401 || response.status === 403) throw new Error(CONFIG.ERRORS.API_AUTH);
-                        if (response.status === 429) throw new Error(CONFIG.ERRORS.API_RATE_LIMIT);
-                        if (response.status >= 500) throw new Error(CONFIG.ERRORS.API_GENERIC);
-                        
-                        throw new Error(`Erreur serveur ${response.status}`);
-                    } catch (err) {
-                        if (err.name === 'AbortError' || err.message === CONFIG.ERRORS.API_AUTH) throw err;
-                        attempt++;
-                        if (attempt > maxRetries) throw err;
-                        
-                        showRetryToast(attempt, maxRetries);
-                        const delay = Math.pow(2, attempt - 1) * CONFIG.API.RETRY_BASE_DELAY;
-                        
-                        await new Promise((resolve, reject) => {
-                            const timeout = setTimeout(resolve, delay);
-                            if (signal) {
-                                signal.addEventListener('abort', () => {
-                                    clearTimeout(timeout);
-                                    reject(new DOMException("Aborted", "AbortError"));
-                                });
-                            }
-                        });
-                    }
-                }
-            },
-
-            async chat(messages) {
-                try {
-                    const response = await this.fetchWithRetry(CONFIG.API.WORKER_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ messages: messages })
-                    });
-                    const data = await response.json();
-                    return data.choices?.[0]?.message?.content || "(*Erreur*)";
-                } catch (e) { throw e; }
-            },
-
-            async translate(text, signal) {
-                const translationPrompt = "Translate the following text to English. Output ONLY the English translation.";
-                const messages = [
-                    { role: 'system', content: translationPrompt },
-                    { role: 'user', content: text }
-                ];
-                
-                const response = await this.fetchWithRetry(CONFIG.API.WORKER_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: messages })
-                }, 3, signal);
-
-                const data = await response.json();
-                return data.choices?.[0]?.message?.content || CONFIG.ERRORS.TRANSLATION_FAIL;
-            },
-
-            async tts(text) {
-                const response = await this.fetchWithRetry(CONFIG.API.WORKER_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'tts', text: text })
-                });
-                return await response.blob();
-            }
-        };
-
-        const AudioManager = {
-            currentAudio: null,
-            async playBlob(blob) {
-                this.stop();
-                const audioUrl = URL.createObjectURL(blob);
-                this.currentAudio = new Audio(audioUrl);
-                const cleanup = () => {
-                    URL.revokeObjectURL(audioUrl);
-                    if(this.currentAudio && this.currentAudio.src === audioUrl) this.currentAudio = null;
-                };
-                this.currentAudio.onended = cleanup;
-                this.currentAudio.onerror = () => { console.error("Erreur lecture audio"); cleanup(); };
-                try { await this.currentAudio.play(); } catch (e) { console.error("Autoplay bloqué:", e); cleanup(); }
-            },
-            stop() {
-                if (this.currentAudio) {
-                    this.currentAudio.pause();
-                    this.currentAudio = null;
-                }
-            }
-        };
-
-        // --- SYSTEM PROMPT ---
-        const systemInstruction = `
-        Rôle et contexte
-        Tu es un agent immobilier suisse travaillant pour l’agence immobilière Planète Immo, située dans le canton de Vaud.
-        Tu réponds à des appels téléphoniques entrants de clients intéressés par la location d’un appartement.
-
-        L’utilisateur est un client qui t’appelle pour obtenir des informations sur un logement qu’il souhaite visiter et éventuellement louer.
-        Tu incarnes pleinement ton rôle : tu n’es pas une IA, mais un véritable agent immobilier.
-
-        Tu adoptes un style oral, comme lors d’un vrai entretien téléphonique :
-        - phrases simples et naturelles
-        - ton poli, professionnel, formel mais chaleureux
-        - rythme naturel
-        - vocabulaire courant (niveau B1–B2)
-
-        🎯 Objectif pédagogique
-        L’utilisateur est, dans la vraie vie, un étudiant qui apprend le français.
-        Ton objectif principal est de l’entraîner à parler français à l’oral, dans une situation réaliste de recherche de logement.
-        Tu encourages l’utilisateur à parler le plus possible et tu l’aides à s’exprimer avec bienveillance.
-
-        🏠 Contenu possible de la conversation
-        Tu peux parler notamment de :
-        - la localisation de l’appartement (commune, quartier, canton de Vaud)
-        - le loyer, les charges et ce qu’elles comprennent
-        - la superficie et le nombre de pièces
-        - les meubles et équipements (meublé / non meublé)
-        - le dépôt de garantie
-        - la durée et les conditions du bail
-        - la régie ou le propriétaire
-        - les voisins et l’environnement
-        - les transports publics, commerces et services à proximité
-        - les conditions pour organiser une visite
-        - d’autres logements disponibles si le client n’est pas satisfait
-
-        Tu peux t’appuyer sur des lieux réels du canton de Vaud (Lausanne, Renens, Nyon, Vevey, Morges, etc.) lorsque cela est pertinent.
-
-        🗣️ Interaction et conduite de l’entretien
-        - Pose une seule question à la fois
-        - Ne fais pas de réponses trop longues
-        - Attends des réponses explicites de l’utilisateur
-        - Si l’utilisateur ne répond pas à la question posée, fais-le lui remarquer poliment
-        - Si l’utilisateur ne comprend pas, reformule ton message simplement
-        - Si l’utilisateur hésite ou bloque, aide-le avec une reformulation ou une suggestion
-
-        📚 Aide pédagogique (TRÈS IMPORTANT)
-        Si l’utilisateur fait une erreur de vocabulaire, de grammaire ou de syntaxe :
-        - ne l’interromps pas
-        - réponds normalement au contenu de son message
-        - en cas d'erreur, ajoute à la fin de ton message une correction douce et bienveillante, par exemple :
-        « Petite correction : on dit plutôt… »
-        « Petite correction : au lieu de…, vous pouvez dire… »
-
-        Si l’utilisateur pose une question sur la grammaire, le vocabulaire ou la syntaxe :
-        - réponds comme le ferait un enseignant de français, de manière claire et bienveillante
-
-        ⚠️ Règles impératives
-        - Reste toujours dans ton rôle
-        - Ne parle qu'en français 
-        - Ne dis jamais que tu es une IA ou un modèle de langage
-        - Respecte toutes les consignes ci-dessus sans exception
-        
-        OUTPUT FORMAT: Every single response must be strictly in this format:
-        [French Text] ||| [English Translation]
-        Example: "Bonjour, comment allez-vous ? ||| Hello, how are you?"
-        `;
-
-        // Initialization Logic
+        // Initialization
         function init() {
+            // Load settings via manager
             const savedSettings = StorageManager.getSettings();
             if (savedSettings) settings = { ...settings, ...savedSettings };
-            
+
             applyTheme(settings.theme);
+
+            // Apply saved audio state
             audioEnabled = settings.audioEnabled || false;
             updateSpeakerUI();
-            
+
             loadChatHistory();
-            setTimeout(updateOnlineStatus, 500);
+            setTimeout(updateOnlineStatus, 500); // Check connection with delay
         }
-        
+
+        function updateSpeakerUI() {
+            if (audioEnabled) {
+                speakerIcon.innerHTML = SVG_SOUND;
+                speakerToggle.classList.add('active-sound');
+            } else {
+                speakerIcon.innerHTML = SVG_MUTE;
+                speakerToggle.classList.remove('active-sound');
+            }
+        }
+
         // --- OFFLINE DETECTION ---
         function updateOnlineStatus() {
             if (!navigator.onLine) {
@@ -1287,11 +1348,16 @@
                 offlineBanner.classList.remove('visible');
             }
         }
-        offlineBanner.addEventListener('click', () => offlineBanner.classList.remove('visible'));
+
+        // Manual dismiss if stuck
+        offlineBanner.addEventListener('click', () => {
+            offlineBanner.classList.remove('visible');
+        });
+
+        // Only listen for changes, don't check on init
         window.addEventListener('online', updateOnlineStatus);
         window.addEventListener('offline', updateOnlineStatus);
 
-        // --- HISTORY LOADING ---
         function loadChatHistory() {
             const history = StorageManager.getHistory();
             if (history) {
@@ -1307,38 +1373,44 @@
         }
 
         function showDefaultMessage() {
-            const initialMsg = "Bonjour, ici l’agence immobilière Planète Immo, que puis-je faire pour vous ?";
-            const initialTrans = "Hello, Planète Immo real estate agency here, how can I help you?";
-            
+            const initialMsg = "Bonjour ! Enfin à Paris ! Comment s'est passé le voyage ? 🚆";
+            const initialTrans = "Hello! Finally in Paris! How was the trip?";
+
+            // Only add if not restoring from history
+            // Use current time for default message
             const now = new Date().toISOString();
+
             appendMessage('bot', initialMsg, initialTrans, false, now);
-            
+
+            // Note: We don't save default message to storage immediately,
+            // we'll let the first interaction handle saving or save it here?
+            // Better to save it so timestamp is fixed.
             chatHistory.push({ role: 'bot', text: initialMsg, translation: initialTrans, timestamp: now });
             StorageManager.saveHistory(chatHistory);
         }
 
-        // --- GLOBAL WINDOW HELPERS (Called from HTML) ---
-        window.clearHistory = function() {
-            if(confirm("Voulez-vous vraiment effacer la conversation ?")) {
+        function clearHistory() {
+            if (confirm("Voulez-vous vraiment effacer le chat ?")) {
                 StorageManager.clearAll();
                 chatHistory = [];
                 chatContainer.innerHTML = '';
                 lastRenderedDateString = null;
                 showDefaultMessage();
             }
-        };
+        }
 
-        window.closeErrorPopup = function() {
+        // Helpers
+        window.closeErrorPopup = function () {
             errorOverlay.classList.remove('visible');
-        };
-        
-        window.showErrorPopup = function(msg) {
+        }
+
+        window.showErrorPopup = function (msg) {
             errorMessageDiv.textContent = msg;
             errorOverlay.classList.add('visible');
-        };
+        }
 
         function showRetryToast(attempt, max) {
-            retryText.textContent = `Problème de connexion... essai (${attempt}/${max})`;
+            retryText.textContent = `Verbindungsproblem... versuche es erneut (${attempt}/${max})`;
             retryToast.classList.add('visible');
         }
 
@@ -1346,79 +1418,94 @@
             retryToast.classList.remove('visible');
         }
 
-        function updateSpeakerUI() {
-            if (audioEnabled) {
-                speakerIcon.innerHTML = SVG_SOUND;
-                speakerToggle.classList.add('active-sound');
-            } else {
-                speakerIcon.innerHTML = SVG_MUTE;
-                speakerToggle.classList.remove('active-sound');
-            }
-        }
-
-        // --- UI HANDLERS ---
+        // Theme
         themeToggle.addEventListener('click', () => {
             const newTheme = settings.theme === 'light' ? 'dark' : 'light';
             settings.theme = newTheme;
             applyTheme(newTheme);
             StorageManager.saveSettings(settings);
         });
-        
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             themeIcon.innerHTML = theme === 'light' ? SVG_SUN : SVG_MOON;
         }
 
+        // Audio Toggle
         speakerToggle.addEventListener('click', () => {
             audioEnabled = !audioEnabled;
             settings.audioEnabled = audioEnabled;
             StorageManager.saveSettings(settings);
             updateSpeakerUI();
-            if (!audioEnabled) AudioManager.stop();
+
+            // Stop audio if disabled
+            if (!audioEnabled) {
+                AudioManager.stop();
+            }
         });
 
+        // CHARACTER COUNTER logic
         userInput.addEventListener('input', () => {
             const len = userInput.value.length;
             charCount.textContent = `${len}/${CONFIG.CHAT.MAX_CHARS}`;
-            charCount.style.color = len > CONFIG.CHAT.MAX_CHARS ? '#D32F2F' : '#999';
-        });
-
-        window.handleEnter = function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                window.sendMessage();
+            if (len > CONFIG.CHAT.MAX_CHARS) {
+                charCount.style.color = '#D32F2F'; // Red
+            } else {
+                charCount.style.color = '#999';
             }
-        };
-
-        // Shortcuts
-        document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); userInput.focus(); }
-            if (e.key === 'Escape') { if (document.activeElement === userInput) { userInput.value = ''; userInput.dispatchEvent(new Event('input')); } }
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); window.sendMessage(); }
         });
 
-        // --- MESSAGING LOGIC ---
+        // SHORTCUT LISTENERS
+        document.addEventListener('keydown', (e) => {
+            // Cmd/Ctrl + K: Focus Input
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                userInput.focus();
+            }
+
+            // Escape: Clear Input
+            if (e.key === 'Escape') {
+                if (document.activeElement === userInput) {
+                    userInput.value = '';
+                    // Trigger input event to update char count
+                    userInput.dispatchEvent(new Event('input'));
+                }
+            }
+
+            // Cmd/Ctrl + Enter: Send
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Helper to check if user is near bottom
         function isUserNearBottom() {
-            const threshold = CONFIG.CHAT.SCROLL_THRESHOLD; 
+            const threshold = CONFIG.CHAT.SCROLL_THRESHOLD; // pixels
             const position = chatContainer.scrollTop + chatContainer.clientHeight;
-            return chatContainer.scrollHeight - position <= threshold;
+            const height = chatContainer.scrollHeight;
+            return height - position <= threshold;
         }
 
-        window.sendMessage = async function() {
+        window.sendMessage = async function () {
             if (sendBtn.disabled) return;
+
             let text = userInput.value.trim();
             if (!text) return;
+
             if (text.length > CONFIG.CHAT.MAX_CHARS) {
-                window.showErrorPopup(CONFIG.ERRORS.INPUT_TOO_LONG.replace('{0}', CONFIG.CHAT.MAX_CHARS));
+                // Use mapped error message
+                const msg = CONFIG.ERRORS.INPUT_TOO_LONG.replace('{0}', CONFIG.CHAT.MAX_CHARS);
+                window.showErrorPopup(msg);
                 return;
             }
-            
+
             userInput.value = '';
             charCount.textContent = `0/${CONFIG.CHAT.MAX_CHARS}`;
-            
+            charCount.style.color = '#999';
+
             const userTimestamp = new Date().toISOString();
             const userMsgDiv = appendMessage('user', text, null, true, userTimestamp);
-            
+
             sendBtn.disabled = true;
             sendBtn.innerHTML = '<div class="btn-spinner"></div>';
             micBtn.disabled = true;
@@ -1428,84 +1515,102 @@
             chatHistory.push({ role: 'user', text: text, translation: null, timestamp: userTimestamp });
             StorageManager.saveHistory(chatHistory);
 
-            // Fetch User Translation
+            // Translation (Using Retry)
             APIClient.translate(text).then(trans => {
                 userMsgDiv.setAttribute('data-translation', trans);
-                if(chatHistory[userHistoryIndex]) {
+                if (chatHistory[userHistoryIndex]) {
                     chatHistory[userHistoryIndex].translation = trans;
                     StorageManager.saveHistory(chatHistory);
                 }
-                // Refresh tooltip if active
                 const selection = window.getSelection();
                 if (selection.toString().trim() === text) {
-                     const range = selection.getRangeAt(0);
-                     const rect = range.getBoundingClientRect();
-                     showTooltip(rect, trans);
+                    const range = selection.getRangeAt(0);
+                    const rect = range.getBoundingClientRect();
+                    showTooltip(rect, trans);
                 }
-            }).catch(e => console.error("Traduction utilisateur échouée", e));
+            }).catch(e => console.error("Background User Translation failed", e));
 
-            // Prepare history for API
             const messages = [{ role: 'system', content: systemInstruction }];
             chatHistory.forEach(msg => {
-                messages.push({ role: msg.role === 'user' ? 'user' : 'assistant', content: msg.text });
+                messages.push({
+                    role: msg.role === 'user' ? 'user' : 'assistant',
+                    content: msg.text
+                });
             });
 
+            // Loading indicator
             const wasAtBottom = isUserNearBottom();
             showLoadingIndicator();
             if (wasAtBottom) scrollToBottom();
 
             try {
+                // Use API Client for chat
                 const rawContent = await APIClient.chat(messages);
-                
-                let frenchText = rawContent;
+
+                let germanText = rawContent;
                 let englishTrans = null;
-                
+
                 if (rawContent.includes('|||')) {
                     const parts = rawContent.split('|||');
-                    frenchText = parts[0].trim();
+                    germanText = parts[0].trim();
                     englishTrans = parts[1].trim();
                 }
 
+                // Audio Request - SYNCED
                 let audioBlob = null;
-                if (audioEnabled && frenchText) {
-                    try { audioBlob = await APIClient.tts(frenchText); } catch(e) { console.error("TTS erreur:", e); }
+                if (audioEnabled && germanText) {
+                    try {
+                        console.log("Lade Audio...");
+                        audioBlob = await APIClient.tts(germanText);
+                    } catch (e) {
+                        console.error("TTS Fehler:", e);
+                    }
                 }
 
                 removeLoadingIndicator();
 
-                if (frenchText) {
+                if (germanText) {
                     const botTimestamp = new Date().toISOString();
-                    const botMsgDiv = appendMessage('bot', frenchText, englishTrans, false, botTimestamp);
+                    const botMsgDiv = appendMessage('bot', germanText, englishTrans, false, botTimestamp);
+
                     if (wasAtBottom) scrollToBottom();
 
-                    // Fallback translation if model forgot ||| format
                     if (!englishTrans) {
-                        APIClient.translate(frenchText).then(trans => {
+                        APIClient.translate(germanText).then(trans => {
                             botMsgDiv.setAttribute('data-translation', trans);
                             const lastBotIndex = chatHistory.length - 1;
-                            if (chatHistory[lastBotIndex]?.role === 'bot') {
+                            if (chatHistory[lastBotIndex] && chatHistory[lastBotIndex].role === 'bot') {
                                 chatHistory[lastBotIndex].translation = trans;
                                 StorageManager.saveHistory(chatHistory);
                             }
-                        });
+                            const selection = window.getSelection();
+                            if (selection.anchorNode && botMsgDiv.contains(selection.anchorNode) && selection.toString().trim().length > 0) {
+                                const range = selection.getRangeAt(0);
+                                const rect = range.getBoundingClientRect();
+                                showTooltip(rect, trans);
+                            }
+                        }).catch(err => console.error("Bot fallback translation error", err));
                     }
 
-                    chatHistory.push({ role: 'bot', text: frenchText, translation: englishTrans, timestamp: botTimestamp });
+                    chatHistory.push({ role: 'bot', text: germanText, translation: englishTrans, timestamp: botTimestamp });
+
                     if (chatHistory.length > CONFIG.CHAT.MAX_HISTORY_LENGTH) {
                         chatHistory = chatHistory.slice(chatHistory.length - CONFIG.CHAT.MAX_HISTORY_LENGTH);
                     }
                     StorageManager.saveHistory(chatHistory);
 
-                    if (audioBlob) AudioManager.playBlob(audioBlob);
+                    if (audioBlob) {
+                        AudioManager.playBlob(audioBlob);
+                    }
                 }
-
             } catch (err) {
                 removeLoadingIndicator();
                 console.error(err);
+                // Use default generic error if specific message not available, or pass mapped message if thrown by APIClient
                 const errMsg = err.message || CONFIG.ERRORS.UNKNOWN;
-                window.showErrorPopup("Erreur: " + errMsg);
+                window.showErrorPopup("Fehler: " + errMsg);
             } finally {
-                sendBtn.innerHTML = "Envoyer";
+                sendBtn.innerHTML = "Senden";
                 if (navigator.onLine) {
                     sendBtn.disabled = false;
                     micBtn.disabled = false;
@@ -1514,38 +1619,53 @@
                 }
                 hideRetryToast();
             }
-        };
+        }
 
-        // --- TRANSLATION TOOLTIP LOGIC ---
+        // --- TRANSLATION TOOLTIP HELPERS ---
         function debounce(func, wait) {
             let timeout;
-            return function(...args) { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), wait); };
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
         }
-        
+
         document.addEventListener('selectionchange', debounce(handleSelection, CONFIG.UI.DEBOUNCE_DELAY));
         document.addEventListener('mousedown', (e) => {
-            if (e.target !== translationTooltip) hideTooltip();
+            if (e.target !== translationTooltip) {
+                hideTooltip();
+            }
         });
 
         function handleSelection() {
             const selection = window.getSelection();
             const text = selection.toString().trim();
-            if (translationController) { translationController.abort(); translationController = null; }
-            if (!text) { hideTooltip(); return; }
+
+            if (translationController) {
+                translationController.abort();
+                translationController = null;
+            }
+
+            if (!text) {
+                hideTooltip();
+                return;
+            }
 
             let node = selection.anchorNode;
             while (node && node.nodeType !== 1) node = node.parentNode;
             let messageDiv = node ? node.closest('.message') : null;
+
             if (!messageDiv) return;
 
             const range = selection.getRangeAt(0);
             const rect = range.getBoundingClientRect();
-            
-            // Check full message selection
+
             let isFullMessage = false;
             if (messageDiv.hasAttribute('data-translation')) {
                 const divText = messageDiv.textContent.replace('✨', '').trim();
-                if (divText.includes(text) && text.length > divText.length * 0.9) isFullMessage = true;
+                if (divText.includes(text) && text.length > divText.length * 0.9) {
+                    isFullMessage = true;
+                }
             }
 
             if (isFullMessage) {
@@ -1553,91 +1673,128 @@
                 if (trans) showTooltip(rect, trans);
             } else {
                 if (translationCache.has(text)) {
-                    const cached = translationCache.get(text);
-                    translationCache.delete(text); translationCache.set(text, cached);
-                    showTooltip(rect, cached);
+                    const cachedTrans = translationCache.get(text);
+                    translationCache.delete(text);
+                    translationCache.set(text, cachedTrans);
+                    showTooltip(rect, cachedTrans);
                     return;
                 }
-                
+
                 translationController = new AbortController();
+                const signal = translationController.signal;
+
                 showTooltip(rect, "Traduction...");
-                
-                APIClient.translate(text, translationController.signal).then(trans => {
-                    if (trans && trans !== CONFIG.ERRORS.TRANSLATION_FAIL) {
-                        if (translationCache.size >= CONFIG.UI.MAX_CACHE_SIZE) translationCache.delete(translationCache.keys().next().value);
-                        translationCache.set(text, trans);
+
+                APIClient.translate(text, signal).then(translation => {
+                    if (translation && translation !== "Error") {
+                        if (translationCache.size >= CONFIG.UI.MAX_CACHE_SIZE) {
+                            const firstKey = translationCache.keys().next().value;
+                            translationCache.delete(firstKey);
+                        }
+                        translationCache.set(text, translation);
                     }
-                    if (window.getSelection().toString().trim() === text) showTooltip(rect, trans);
+                    if (window.getSelection().toString().trim() === text) {
+                        showTooltip(rect, translation);
+                    }
                 }).catch(e => {
-                    if (e.name !== 'AbortError') showTooltip(rect, "Erreur");
+                    if (e.name === 'AbortError') return;
+                    console.error("Partial translation error", e);
+                    showTooltip(rect, "Erreur");
                 });
             }
         }
 
-        const translationTooltip = document.createElement('div');
-        translationTooltip.id = 'translation-tooltip';
-        document.body.appendChild(translationTooltip);
-
         function showTooltip(rect, text) {
             translationTooltip.textContent = text;
             translationTooltip.classList.add('visible');
-            const h = translationTooltip.offsetHeight;
-            const w = translationTooltip.offsetWidth;
-            let top = rect.top - h - 10;
-            let left = rect.left + (rect.width/2) - (w/2);
-            if (top < 10) top = rect.bottom + 10;
+            const tooltipHeight = translationTooltip.offsetHeight;
+            const tooltipWidth = translationTooltip.offsetWidth;
+
+            // Default to bottom
+            let top = rect.bottom + 10;
+            let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+
+            // Flip to top if it goes off screen bottom
+            if (top + tooltipHeight > window.innerHeight - 10) {
+                top = rect.top - tooltipHeight - 10;
+            }
+
+            // Horizontal bounds
             if (left < 10) left = 10;
-            if (left + w > window.innerWidth) left = window.innerWidth - w - 10;
+            if (left + tooltipWidth > window.innerWidth) left = window.innerWidth - tooltipWidth - 10;
+
             translationTooltip.style.top = `${top}px`;
             translationTooltip.style.left = `${left}px`;
         }
 
         function hideTooltip() {
             translationTooltip.classList.remove('visible');
-            setTimeout(() => { if (!translationTooltip.classList.contains('visible')) { translationTooltip.style.top = '-9999px'; } }, 200);
+            setTimeout(() => {
+                if (!translationTooltip.classList.contains('visible')) {
+                    translationTooltip.style.top = '-9999px';
+                    translationTooltip.style.left = '-9999px';
+                }
+            }, 200);
         }
 
-        // --- DOM MANIPULATION ---
+        // UI Helpers
         function appendMessage(role, text, translation = null, isUser = false, timestamp = null) {
             const div = document.createElement('div');
             div.className = `message ${role}`;
             div.setAttribute('aria-live', role === 'bot' ? 'polite' : 'off');
 
+            // Create Copy Button
             const copyBtn = document.createElement('button');
             copyBtn.className = 'copy-btn';
             copyBtn.innerHTML = SVG_COPY;
-            copyBtn.onclick = (e) => { e.stopPropagation(); copyToClipboard(text); };
+            copyBtn.setAttribute('aria-label', 'Text kopieren');
+            copyBtn.title = 'Kopieren';
+            copyBtn.onclick = (e) => {
+                e.stopPropagation();
+                copyToClipboard(text);
+            };
             div.appendChild(copyBtn);
-            div.addEventListener('dblclick', () => copyToClipboard(text));
 
+            div.addEventListener('dblclick', () => {
+                copyToClipboard(text);
+            });
+
+            // Text Content Wrapper
             let innerContent = `<div class="message-text">${text.replace(/\n/g, '<br>')}</div>`;
+
             if (role === 'bot') {
-                 // Check for positive keywords to add sparkle
-                 const posWords = ['bravo', 'excellent', 'bien', 'parfait', 'super', 'bon', 'd\'accord', 'ok'];
-                 const firstWord = text.trim().split(' ')[0].toLowerCase().replace(/[.,!]/g, '');
-                 if (posWords.includes(firstWord)) innerContent = `<span class="feedback-icon">✨</span>` + innerContent;
+                const posWords = ['super', 'exact', 'bravo', 'génial', 'parfait'];
+                const firstWord = text.trim().split(' ')[0].toLowerCase().replace(/[.,!]/g, '');
+                if (posWords.includes(firstWord)) {
+                    // Add sparkle before text content
+                    innerContent = `<span class="feedback-icon">✨</span>` + innerContent;
+                }
             }
+
             const contentWrapper = document.createElement('div');
             contentWrapper.innerHTML = innerContent;
             div.appendChild(contentWrapper);
 
-            if (translation) div.setAttribute('data-translation', translation);
+            if (translation) {
+                div.setAttribute('data-translation', translation);
+            }
 
-            // Date Divider
+            // DATE DIVIDER LOGIC
             const dateObj = timestamp ? new Date(timestamp) : new Date();
-            const dateString = dateObj.toLocaleDateString('fr-FR');
+            const dateString = dateObj.toLocaleDateString();
+
             if (lastRenderedDateString !== dateString) {
                 const divider = document.createElement('div');
                 divider.className = 'date-divider';
-                const today = new Date().toLocaleDateString('fr-FR');
-                divider.innerText = dateString === today ? 'Aujourd\'hui' : dateString;
+                const today = new Date().toLocaleDateString();
+                divider.innerText = dateString === today ? "Aujourd'hui" : dateString;
                 chatContainer.appendChild(divider);
                 lastRenderedDateString = dateString;
             }
 
             const timeDiv = document.createElement('span');
             timeDiv.className = 'message-timestamp';
-            timeDiv.innerText = dateObj.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+            timeDiv.innerText = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             div.appendChild(timeDiv);
 
             chatContainer.appendChild(div);
@@ -1661,50 +1818,83 @@
             if (el) el.remove();
         }
 
-        const copyToast = document.getElementById('copy-toast');
+        // --- COPY TO CLIPBOARD ---
         function showCopyToast() {
             copyToast.classList.add('visible');
-            setTimeout(() => copyToast.classList.remove('visible'), CONFIG.UI.TOAST_DURATION);
+            setTimeout(() => {
+                copyToast.classList.remove('visible');
+            }, CONFIG.UI.TOAST_DURATION);
         }
 
         async function copyToClipboard(text) {
             try {
                 await navigator.clipboard.writeText(text);
                 showCopyToast();
-            } catch(e) { console.error(e); }
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                try {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showCopyToast();
+                } catch (e) {
+                    console.error('Fallback failed', e);
+                }
+            }
         }
 
-        // --- MIC HANDLING ---
+        // Mic Init
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognition) {
             const recognition = new SpeechRecognition();
             recognition.lang = 'fr-FR';
             recognition.continuous = false;
-            
+
             recognition.onstart = () => micBtn.classList.add('active');
-            recognition.onend = () => micBtn.classList.remove('active');
-            recognition.onerror = (e) => {
+
+            recognition.onend = () => {
+                micBtn.classList.remove('active');
+            };
+
+            recognition.onerror = (event) => {
                 micBtn.classList.remove('active');
                 let msg = CONFIG.ERRORS.UNKNOWN;
-                switch(e.error) {
+
+                switch (event.error) {
                     case 'no-speech': msg = CONFIG.ERRORS.MIC_NO_SPEECH; break;
-                    case 'not-allowed': msg = CONFIG.ERRORS.MIC_NOT_ALLOWED; break;
-                    // ... other cases map to German config, you might want to translate CONFIG.ERRORS to French
-                    // I have translated them in the CONFIG object above.
+                    case 'audio-capture': msg = CONFIG.ERRORS.MIC_NO_DEVICE; break;
+                    case 'not-allowed':
+                    case 'service-not-allowed': msg = CONFIG.ERRORS.MIC_NOT_ALLOWED; break;
+                    case 'network': msg = CONFIG.ERRORS.NETWORK; break;
+                    case 'aborted': return;
+                    default: msg = "Erreur micro : " + event.error;
                 }
+
                 window.showErrorPopup(msg);
             };
+
             recognition.onresult = (e) => {
-                userInput.value = e.results[0][0].transcript;
+                const transcript = e.results[0][0].transcript;
+                userInput.value = transcript;
                 userInput.focus();
             };
+
             micBtn.addEventListener('click', () => {
-                try { recognition.start(); } catch(e) { recognition.stop(); }
+                if (micBtn.classList.contains('active')) {
+                    recognition.stop();
+                } else {
+                    try { recognition.start(); } catch (e) { recognition.stop(); }
+                }
             });
         } else {
             micBtn.style.display = 'none';
         }
+
         init();
     </script>
 </body>
+
 </html>
